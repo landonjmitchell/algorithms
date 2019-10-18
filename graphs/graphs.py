@@ -88,5 +88,5 @@ class GraphTypeError(Exception):
     raise: GraphTypeError
         Raises error indicating incompatible graph type
     """
-    
+
     pass
