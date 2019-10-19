@@ -1,7 +1,7 @@
 import math
 import unittest
 
-import graphs, bfs, dfs, test_graphs
+import graphs, exceptions, bfs, dfs, test_graphs
 import shortest_paths as sp
 import graph_properties as gp
 

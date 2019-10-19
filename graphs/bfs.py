@@ -37,6 +37,12 @@ def bfs(graph, start):
         is_bipartite : bool
             Indication of whether the connected component of which the
             starting vertex is a member is bipartite.
+
+        Raises
+        ------
+        VertexNotFoundError
+            If 'start' argument is not a vertex in the graph
+
     """
 
     if start not in graph.vertices:
