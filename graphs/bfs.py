@@ -84,6 +84,3 @@ def bfs(graph, start):
         colors[vertex] = "black"
 
     return colors, distances, parents, has_cycle, is_bipartite
-
-if __name__ == '__main__':
-    print (bfs(test_graphs.graph_a, 'X'))
