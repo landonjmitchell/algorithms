@@ -1,5 +1,5 @@
 from queue import deque
-import graphs, dfs, test_graphs
+import graphs, exceptions, test_graphs
 
 
 def bfs(graph, start):
@@ -39,6 +39,9 @@ def bfs(graph, start):
             starting vertex is a member is bipartite.
     """
 
+    if start not in graph.vertices:
+        raise exceptions.VertexNotFound(start)
+
     directed = graph.directed
     has_cycle = False
     is_bipartite = True
@@ -75,3 +78,6 @@ def bfs(graph, start):
         colors[vertex] = "black"
 
     return colors, distances, parents, has_cycle, is_bipartite
+
+if __name__ == '__main__':
+    print (bfs(test_graphs.graph_a, 'X'))

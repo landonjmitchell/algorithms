@@ -79,14 +79,3 @@ class Graph:
             The vertex to be added to the graph
         """
         self.vertices.add(vertex)
-
-
-class GraphTypeError(Exception):
-    """ Error indicating an incompatible graph type has been passed to a
-        graph function.
-
-    raise: GraphTypeError
-        Raises error indicating incompatible graph type
-    """
-
-    pass

@@ -54,9 +54,9 @@ class TestGraphFunctions(unittest.TestCase):
 
         self.assertTrue(gp.has_undirected_cycle(self.graph_b))
         self.assertFalse(gp.has_undirected_cycle(self.graph_a))
-        with self.assertRaises(graphs.GraphTypeError):
+        with self.assertRaises(exceptions.GraphTypeError):
             gp.has_undirected_cycle(self.graph_c)
-        with self.assertRaises(graphs.GraphTypeError):
+        with self.assertRaises(exceptions.GraphTypeError):
             gp.has_undirected_cycle(self.graph_d)
 
 

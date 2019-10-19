@@ -1,5 +1,4 @@
-import graphs
-import test_graphs
+import graphs, exceptions, test_graphs
 
 def dfs(graph):
     """ Return information derived from a depth first traversal of a graph.
@@ -83,7 +82,7 @@ def dfs_visit(graph, vertex, colors, parents, discovery, finish):
             Collections of the vertices comprising each connected component
             of the graph.
     """
-    
+
     global time, directed, cycle, top_sort, connected_components
     time += 1
 
