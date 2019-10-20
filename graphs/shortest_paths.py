@@ -210,3 +210,78 @@ def relax(graph, vertex, neighbor, paths, distances, min_heap):
         distances[neighbor] = (distances[vertex] + edge_weight)
         heapq.heappush(min_heap, (distances[neighbor], neighbor))
         paths[neighbor] = paths[vertex] + [vertex]
+
+
+def dijkstra_shortest_path(graph, start, end):
+    """ Return a minimal edge weighted path between two vertices.
+
+        Return a shortest path from start to end in a weighted graph.
+        There may be more than one valid path.
+
+        Parameters
+        ----------
+        graph : Graph instance
+            The graph from which the path is to be calculated
+        start: Any hashable value
+            The starting vertex from which to determine the path
+        end: Any hashable value
+            The ending vertex to which the path is determined
+
+        Returns
+        -------
+        path : list of hashable values / None
+            A minimumal edge weighted path between the start and end vertices,
+            inclusive of both start and end vertices. Returns None if no
+            path from start to end vertices exists.
+
+        Raises
+        ------
+        VertexNotFoundError
+            If 'start' or 'end' argument is not a vertex in the graph
+    """
+
+    if start not in graph.vertices:
+        raise exceptions.VertexNotFound(start)
+    if end not in graph.vertices:
+        raise exceptions.VertexNotFound(end)
+
+
+    paths, distances = dijkstra(graph, start)
+    return paths[end] if paths[end] else None
+
+
+def dijkstra_shortest_distance(graph, start, end):
+    """ Return miminal weighted edge distance between two vertices.
+
+        Return the shortest distance between given start and end vertices in a
+        weighted graph.
+
+        Parameters
+        ----------
+        graph : Graph instance
+            The graph from which the distance is to be calculated
+        start: Any hashable value
+            The starting vertex from which to calculate the distance
+        end: Any hashable value
+            The ending vertex to which the distance is calculated
+
+        Returns
+        -------
+        distance : int / float
+            The minimum total edge weight that needs to be traversed to reach
+            the end vertex from the start vertex. Returns float('inf') if end
+            is unreachable from start.
+
+        Raises
+        ------
+        VertexNotFoundError
+            If 'start' or 'end' argument is not a vertex in the graph
+    """
+
+    if start not in graph.vertices:
+        raise exceptions.VertexNotFound(start)
+    if end not in graph.vertices:
+        raise exceptions.VertexNotFound(end)
+
+    paths, distances = dijkstra(graph, start)
+    return distances[end]
