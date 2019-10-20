@@ -36,3 +36,49 @@ def shortest_unweighted_distance(graph, start, end):
 
     c, distances, p, hc, b = bfs.bfs(graph, start)
     return distances[end]
+
+
+def shortest_unweighted_path(graph, start, end):
+    """ Return a minimal edge path between two vertices.
+
+        Return a shortest path from start to end in an unweighted graph.
+        There may be more than one.
+
+        Parameters
+        ----------
+        graph : Graph instance
+            The graph from which the path is to be calculated
+        start: Any hashable value
+            The starting vertex from which to determine the path
+        end: Any hashable value
+            The ending vertex to which the path is determined
+
+        Returns
+        -------
+        path : list of hashable values / None
+            A minimumal edge path between the start and end vertices,
+            inclusive of both start and end vertices. Returns None if no
+            path from start to end vertices exists.
+
+        Raises
+        ------
+        VertexNotFoundError
+            If 'start' or 'end' argument is not a vertex in the graph
+    """
+
+    if start not in graph.vertices:
+        raise exceptions.VertexNotFound(start)
+    if end not in graph.vertices:
+        raise exceptions.VertexNotFound(end)
+
+    c, distances, parent, hc, b = bfs.bfs(graph, start)
+    if distances[end] == float('inf'):
+        return None
+
+    path = []
+    vertex = end
+    while vertex is not None:
+        path.append(vertex)
+        vertex = parent[vertex]
+
+    return path[::-1]
