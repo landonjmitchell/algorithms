@@ -83,8 +83,10 @@ class TestGraphFunctions(unittest.TestCase):
             Should return None if topological sorting is not possible.
         """
 
-        self.assertIsNone(gp.topological_sort(self.graph_b))
-        self.assertIsNone(gp.topological_sort(self.graph_a))
+        with self.assertRaises(exceptions.GraphTypeError):
+            gp.topological_sort(self.graph_a)
+        with self.assertRaises(exceptions.GraphTypeError):
+            gp.topological_sort(self.graph_b)
 
         top_sort_graph_c = gp.topological_sort(self.graph_c)
         indices = {val: i for i, val in enumerate(top_sort_graph_c)}
