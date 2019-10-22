@@ -113,15 +113,16 @@ def is_strongly_connected(graph):
     cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
     if len(connected_components) > 1:
         return False
-        
+
     return True
 
 
-def connected_components(graph):
-    """ Return the connected components of a graph.
+def undirected_connected_components(graph):
+    """ Return the connected components of an undirected graph.
 
         Return a list of sets containing the ID of the vertices included in
-        each (strongly) connected component using depth first search.
+        each connected component of an undirected graph using depth first
+        search.
 
         Parameters
         ----------
@@ -132,8 +133,17 @@ def connected_components(graph):
         -------
         connected_components : list of sets of hashable values
             List of sets containing the IDs of the vertices included in each
-            (strongly) connected component.
+            connected component.
+
+        Raises
+        ------
+        GraphTypeError
+            If a directed graph is passed
     """
+
+    if graph.directed:
+        raise exceptions.GraphTypeError("Graph is directed")
+        
     cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
     return connected_components
 
