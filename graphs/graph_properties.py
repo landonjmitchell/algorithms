@@ -65,3 +65,24 @@ def is_bipartite(graph):
                 color[vertex] = "black" if temp_color[vertex] == "black" else color[vertex]
 
     return is_bipartite
+
+
+def has_cycle(graph):
+    """ Determine if there is cycle in a graph.
+
+        Determine if there is a cycle in a graph using depth first search.
+        Tests all connected components of a disconnected graph.
+
+        Parameters
+        ----------
+        graph : Graph instance
+            The graph to explore for cycles
+
+        Returns
+        -------
+        distance : bool
+            Indication of whether the graph contains a cycle
+    """
+
+    c, p, d, f, has_cyc, ts, cc = dfs.dfs(graph)
+    return has_cyc
