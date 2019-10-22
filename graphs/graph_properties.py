@@ -128,3 +128,37 @@ def connected_components(graph):
     """
     cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
     return connected_components
+
+
+def topological_sort(graph):
+    """ Return a topological sorting of a directed graph's vertices.
+
+        Return a topological sorting of a graph's vertices if one exists.
+        Direct graphs with cycles will not have a valid topological sorting.
+        There may be more than one valid topological sorting of a given graph.
+        Uses depth first search.
+
+        Parameters
+        ----------
+        graph : Graph instance
+            A directed graph from which to build a topological ordering
+
+        Returns
+        -------
+        top_sort : list of hashable values / None
+            list of the graph's vertices topologically sorted, i.e. a
+            'linear ordering of its vertices such that for every directed
+            edge uv from vertex u to vertex v, u comes before v in the
+            ordering'. Returns None if the graph has a cycle.
+
+        Raises
+        ------
+        GraphTypeError
+            If an undirected path is passed
+    """
+
+    if not graph.directed:
+        raise exceptions.GraphTypeError("Graph is undirected. Topological sorting is not possible")
+
+    c, p, d, f, hs, top_sort, cc = dfs.dfs(graph)
+    return top_sort
