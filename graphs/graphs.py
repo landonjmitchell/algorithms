@@ -81,7 +81,7 @@ class Graph:
         """
         self.vertices.add(vertex)
 
-    def reverse(self):
+    def transpose(self):
         """ Reverses directed edges of graph without creating new copy.
         """
 
@@ -99,15 +99,20 @@ class Graph:
         self.adjacency_list = new_adj_list
 
 
-    def reversed(self):
+    def transposed(self):
         """ Return a new graph with directed edges reversed.
+
+        Returns
+        -------
+        transposed_graph : Graph instance
+            Copy of original graph with edge directions reversed.
         """
 
         if not self.directed:
             return copy.deepcopy(self)
 
-        reversed_graph = Graph(directed=True)
+        transposed_graph = Graph(directed=True)
         for edge in self.edges:
-            reversed_graph.add_edge(edge[1], edge[0], self.weights[edge])
+            transposed_graph.add_edge(edge[1], edge[0], self.weights[edge])
 
-        return reversed_graph
+        return transposed_graph

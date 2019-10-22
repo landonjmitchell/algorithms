@@ -109,7 +109,7 @@ def is_strongly_connected(graph):
     if len(connected_components) > 1:
         return False
 
-    graph.reverse()
+    graph.transpose()
     cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
     if len(connected_components) > 1:
         return False
@@ -143,7 +143,7 @@ def undirected_connected_components(graph):
 
     if graph.directed:
         raise exceptions.GraphTypeError("Graph is directed")
-        
+
     cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
     return connected_components
 
