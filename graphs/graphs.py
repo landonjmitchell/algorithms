@@ -1,4 +1,5 @@
 from collections import defaultdict
+import test_graphs
 
 class Graph:
     """ Object representing a graph in adjacency list format. Supports directed
@@ -79,3 +80,20 @@ class Graph:
             The vertex to be added to the graph
         """
         self.vertices.add(vertex)
+
+    def reverse(self):
+        """ Return graph with reversed directed edges.
+        """
+
+        if not self.directed:
+            return
+
+        self.edges = [edge[::-1] for edge in self.edges]
+        new_weights = {edge[::-1]: weight for edge, weight in self.weights.items()}
+        self.weights = new_weights
+
+        new_adj_list = defaultdict(list)
+        for vertex, neighbors in self.adjacency_list.items():
+            for neighbor in neighbors:
+                new_adj_list[neighbor].append(vertex)
+        self.adjacency_list = new_adj_list
