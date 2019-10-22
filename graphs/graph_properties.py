@@ -131,9 +131,9 @@ def undirected_connected_components(graph):
 
         Returns
         -------
-        connected_components : list of sets of hashable values
-            List of sets containing the IDs of the vertices included in each
-            connected component.
+        connected_components : set of frozensets of hashable values
+            set of frozensets containing the IDs of the vertices included in
+            each connected component.
 
         Raises
         ------
@@ -145,7 +145,10 @@ def undirected_connected_components(graph):
         raise exceptions.GraphTypeError("Graph is directed")
 
     cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
-    return connected_components
+    component_sets = set()
+    for component_set in connected_components:
+        component_sets.add(frozenset(component_set))
+    return component_sets
 
 
 def topological_sort(graph):
