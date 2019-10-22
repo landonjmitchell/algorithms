@@ -65,7 +65,8 @@ class TestGraphFunctions(unittest.TestCase):
 
 
     def test_bfs_is_bipartite(self):
-        """ Tests whether a graph is bipartite using bfs """
+        """ Tests whether a graph is bipartite using bfs
+        """
 
         self.assertFalse(gp.is_bipartite(self.graph_b))
         self.assertTrue(gp.is_bipartite(self.graph_a))
@@ -74,7 +75,8 @@ class TestGraphFunctions(unittest.TestCase):
 
 
     def test_dfs_has_cycle(self):
-        """ Tests dfs detection of cycle in a graph"""
+        """ Tests dfs detection of cycle in a graph
+        """
 
         self.assertFalse(gp.has_cycle(self.graph_a))
         self.assertTrue(gp.has_cycle(self.graph_b))
@@ -82,12 +84,33 @@ class TestGraphFunctions(unittest.TestCase):
         self.assertTrue(gp.has_cycle(self.graph_d))
 
     def test_dfs_is_strongly_connected(self):
-        """ Tests if graph is (strongly) connected """
+        """ Tests if graph is (strongly) connected
+        """
 
         self.assertFalse(gp.is_strongly_connected(self.graph_a))
         self.assertTrue(gp.is_strongly_connected(self.graph_a2))
         self.assertFalse(gp.is_strongly_connected(self.graph_d))
         self.assertTrue(gp.is_strongly_connected(self.graph_d2))
+
+    def test_undirected_connected_components(self):
+        """ Tests accurate grouping of vertices in the connected components
+            of an undirected graph.
+        """
+
+        a_cc = set()
+        a_cc.add(frozenset(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']))
+        a_cc.add(frozenset(['Y', 'Z']))
+        a2_cc = set()
+        a2_cc.add(frozenset(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']))
+
+        self.assertEqual(gp.undirected_connected_components(self.graph_a), a_cc)
+        self.assertEqual(gp.undirected_connected_components(self.graph_a2), a2_cc)
+
+        with self.assertRaises(exceptions.GraphTypeError):
+            gp.undirected_connected_components((self.graph_c))
+        with self.assertRaises(exceptions.GraphTypeError):
+            gp.undirected_connected_components((self.graph_d))
+
 
     def test_topological_sort(self):
         """ Tests for accurate topological sorting of a graph.
