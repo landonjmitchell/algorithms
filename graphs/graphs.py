@@ -1,5 +1,4 @@
 from collections import defaultdict
-import test_graphs
 
 class Graph:
     """ Object representing a graph in adjacency list format. Supports directed

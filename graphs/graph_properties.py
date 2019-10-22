@@ -106,7 +106,15 @@ def is_strongly_connected(graph):
     """
 
     cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
-    return len(connected_components) < 2
+    if len(connected_components) > 1:
+        return False
+
+    graph.reverse()
+    cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
+    if len(connected_components) > 1:
+        return False
+        
+    return True
 
 
 def connected_components(graph):
