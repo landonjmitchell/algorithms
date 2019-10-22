@@ -28,6 +28,32 @@ graph_a.add_edge('G', 'H', 1)
 graph_a.add_edge('H', 'I', 7)
 graph_a.add_edge('Y', 'Z', 5)
 
+
+"""
+Graph A2:
+Undirected, Acyclic, Weighted, Connected, Bipartite
+
+    /---(4)---B---(8)---C---(7)---D
+   /          |           \
+  /         (11)           \--(4)--F--(10)--E
+ /            |
+A             |
+              |  /--(7)--I
+              | /
+              H---(1)----G
+"""
+
+graph_a2 = Graph()
+graph_a2.add_edge('A', 'B', 4)
+graph_a2.add_edge('B', 'C', 8)
+graph_a2.add_edge('B', 'H', 11)
+graph_a2.add_edge('C', 'D', 7)
+graph_a2.add_edge('C', 'F', 4)
+graph_a2.add_edge('E', 'F', 10)
+graph_a2.add_edge('G', 'H', 1)
+graph_a2.add_edge('H', 'I', 7)
+
+
 """
 Graph B:
 Undirected, Cyclic, Weighted, Disconnected, Not Bipartite
@@ -120,3 +146,31 @@ graph_d.add_edge('G', 'H', 1)
 graph_d.add_edge('H', 'I', 7)
 graph_d.add_edge('I', 'G', 6)
 graph_d.add_edge('Y', 'Z', 5)
+
+
+"""
+Graph D2:
+Directed, Cyclic, Weighted, Connected, Not Bipartite
+
+    /--(4)>>--B----(8)>>---C--(7)>>--D--(1)>>
+   /          |             \               /
+  /          (11)            \--(4)>>--F --/
+A             v                        |
+  \           v                       (3)
+   \          |  /--(7)>>-I--(6)>>     v
+    \         | /                 \    v
+     \-<<(8)--H------<<(1)---------G--/
+"""
+
+graph_d2 = Graph(directed=True)
+graph_d2.add_edge('A', 'B', 4)
+graph_d2.add_edge('B', 'C', 8)
+graph_d2.add_edge('B', 'H', 11)
+graph_d2.add_edge('C', 'D', 7)
+graph_d2.add_edge('C', 'F', 4)
+graph_d2.add_edge('D', 'F', 1)
+graph_d2.add_edge('F', 'G', 3)
+graph_d2.add_edge('G', 'H', 1)
+graph_d2.add_edge('H', 'A', 8)
+graph_d2.add_edge('H', 'I', 7)
+graph_d2.add_edge('I', 'G', 6)
