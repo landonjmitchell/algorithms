@@ -86,3 +86,24 @@ def has_cycle(graph):
 
     c, p, d, f, has_cyc, ts, cc = dfs.dfs(graph)
     return has_cyc
+
+
+def is_strongly_connected(graph):
+    """ Determine if a graph is connected.
+
+        Determine if an undirected graph is connected, or a directed graph is
+        strongly connected, using depth first search.
+
+        Parameters
+        ----------
+        graph : Graph instance
+            The graph to explore
+
+        Returns
+        -------
+        distance : bool
+            Indication of whether the graph is (strongly) connected
+    """
+
+    cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
+    return len(connected_components) < 2
