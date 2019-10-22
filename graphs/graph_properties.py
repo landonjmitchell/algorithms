@@ -107,3 +107,24 @@ def is_strongly_connected(graph):
 
     cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
     return len(connected_components) < 2
+
+
+def connected_components(graph):
+    """ Return the connected components of a graph.
+
+        Return a list of sets containing the ID of the vertices included in
+        each (strongly) connected component using depth first search.
+
+        Parameters
+        ----------
+        graph : Graph instance
+            The graph to explore
+
+        Returns
+        -------
+        connected_components : list of sets of hashable values
+            List of sets containing the IDs of the vertices included in each
+            (strongly) connected component.
+    """
+    cp, p, d, f, hs, ts, connected_components = dfs.dfs(graph)
+    return connected_components
