@@ -1,3 +1,4 @@
+import copy
 from collections import defaultdict
 
 class Graph:
@@ -81,7 +82,7 @@ class Graph:
         self.vertices.add(vertex)
 
     def reverse(self):
-        """ Return graph with reversed directed edges.
+        """ Reverses directed edges of graph without creating new copy.
         """
 
         if not self.directed:
@@ -96,3 +97,17 @@ class Graph:
             for neighbor in neighbors:
                 new_adj_list[neighbor].append(vertex)
         self.adjacency_list = new_adj_list
+
+
+    def reversed(self):
+        """ Return a new graph with directed edges reversed.
+        """
+
+        if not self.directed:
+            return copy.deepcopy(self)
+
+        reversed_graph = Graph(directed=True)
+        for edge in self.edges:
+            reversed_graph.add_edge(edge[1], edge[0], self.weights[edge])
+
+        return reversed_graph
