@@ -10,12 +10,16 @@ class TestGraphFunctions(unittest.TestCase):
     def setUp(self):
         # Undirected, Acyclic, Weighted, Disconnected, Bipartite
         self.graph_a = test_graphs.graph_a
+        # Undirected, Acyclic, Weighted, Disconnected, Bipartite
+        self.graph_a2 = test_graphs.graph_a2
         # Undirected, Cyclic, Weighted, Disconnected, Not Bipartite
         self.graph_b = test_graphs.graph_b
         # Directed, Acyclic, Weighted, Disconnected, Bipartite
         self.graph_c = test_graphs.graph_c
         # Directed, Cyclic, Weighted, Disconnected, Not Bipartite
         self.graph_d = test_graphs.graph_d
+        # Directed, Cyclic, Weighted, Connected, Not Bipartite
+        self.graph_d2 = test_graphs.graph_d2
 
     def test_bfs_shortest_unweighted_distance(self):
         """ Tests for accurate minimum unweighted distance from a specified
@@ -77,6 +81,13 @@ class TestGraphFunctions(unittest.TestCase):
         self.assertFalse(gp.has_cycle(self.graph_c))
         self.assertTrue(gp.has_cycle(self.graph_d))
 
+    def test_dfs_is_strongly_connected(self):
+        """ Tests if graph is (strongly) connected """
+
+        self.assertFalse(gp.is_strongly_connected(self.graph_a))
+        self.assertTrue(gp.is_strongly_connected(self.graph_a2))
+        self.assertFalse(gp.is_strongly_connected(self.graph_d))
+        self.assertTrue(gp.is_strongly_connected(self.graph_d2))
 
     def test_topological_sort(self):
         """ Tests for accurate topological sorting of a graph.
