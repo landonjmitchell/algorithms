@@ -46,9 +46,8 @@ def bfs(graph, start):
     """
 
     if start not in graph.vertices:
-        raise exceptions.VertexNotFound(start)
+        raise exceptions.VertexNotFoundError(start)
 
-    directed = graph.directed
     has_cycle = False
     is_bipartite = True
 

@@ -166,7 +166,8 @@ def topological_sort(graph):
     """
 
     if not graph.directed:
-        raise exceptions.GraphTypeError("Graph is undirected. Topological sorting is not possible")
+        raise exceptions.GraphTypeError(
+        "Graph is undirected. Topological sorting is not possible")
 
     c, p, d, f, hs, top_sort, cc = dfs.dfs(graph)
     return top_sort

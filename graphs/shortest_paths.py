@@ -30,9 +30,9 @@ def shortest_unweighted_distance(graph, start, end):
     """
 
     if start not in graph.vertices:
-        raise exceptions.VertexNotFound(start)
+        raise exceptions.VertexNotFoundError(start)
     if end not in graph.vertices:
-        raise exceptions.VertexNotFound(end)
+        raise exceptions.VertexNotFoundError(end)
 
     c, distances, p, hc, b = bfs.bfs(graph, start)
     return distances[end]
@@ -67,9 +67,9 @@ def shortest_unweighted_path(graph, start, end):
     """
 
     if start not in graph.vertices:
-        raise exceptions.VertexNotFound(start)
+        raise exceptions.VertexNotFoundError(start)
     if end not in graph.vertices:
-        raise exceptions.VertexNotFound(end)
+        raise exceptions.VertexNotFoundError(end)
 
     c, distances, parent, hc, b = bfs.bfs(graph, start)
     if distances[end] == float('inf'):
@@ -119,7 +119,7 @@ def dijkstra(graph, start):
     """
 
     if start not in graph.vertices:
-        raise exceptions.VertexNotFound(start)
+        raise exceptions.VertexNotFoundError(start)
 
     paths, distances, min_heap = initialize_single_source(graph, start)
 
@@ -241,9 +241,9 @@ def dijkstra_shortest_path(graph, start, end):
     """
 
     if start not in graph.vertices:
-        raise exceptions.VertexNotFound(start)
+        raise exceptions.VertexNotFoundError(start)
     if end not in graph.vertices:
-        raise exceptions.VertexNotFound(end)
+        raise exceptions.VertexNotFoundError(end)
 
 
     paths, distances = dijkstra(graph, start)
@@ -279,9 +279,9 @@ def dijkstra_shortest_distance(graph, start, end):
     """
 
     if start not in graph.vertices:
-        raise exceptions.VertexNotFound(start)
+        raise exceptions.VertexNotFoundError(start)
     if end not in graph.vertices:
-        raise exceptions.VertexNotFound(end)
+        raise exceptions.VertexNotFoundError(end)
 
     paths, distances = dijkstra(graph, start)
     return distances[end]
