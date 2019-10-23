@@ -92,25 +92,23 @@ class TestGraphFunctions(unittest.TestCase):
         self.assertFalse(gp.is_strongly_connected(self.graph_d))
         self.assertTrue(gp.is_strongly_connected(self.graph_d2))
 
-    def test_undirected_connected_components(self):
+    def test_connected_components(self):
         """ Tests accurate grouping of vertices in the connected components
-            of an undirected graph.
+            of a graph.
         """
 
-        a_cc = set()
-        a_cc.add(frozenset(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']))
-        a_cc.add(frozenset(['Y', 'Z']))
-        a2_cc = set()
-        a2_cc.add(frozenset(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']))
+        a_cc = {frozenset({'F', 'G', 'H', 'A', 'C', 'D', 'E', 'B', 'I'}),
+                frozenset({'Z', 'Y'})}
+        a2_cc = {frozenset({'G', 'I', 'H', 'B', 'E', 'C', 'A', 'F', 'D'})}
+        d_cc = {frozenset({'Y'}), frozenset({'I', 'G', 'H'}), frozenset({'Z'}),
+                frozenset({'A'}), frozenset({'F'}), frozenset({'B'}),
+                frozenset({'E'}), frozenset({'D'}), frozenset({'C'})}
+        d2_cc = {frozenset({'B', 'F', 'G', 'H', 'D', 'C', 'I', 'A'})}
 
-        self.assertEqual(gp.undirected_connected_components(self.graph_a), a_cc)
-        self.assertEqual(gp.undirected_connected_components(self.graph_a2), a2_cc)
-
-        with self.assertRaises(exceptions.GraphTypeError):
-            gp.undirected_connected_components((self.graph_c))
-        with self.assertRaises(exceptions.GraphTypeError):
-            gp.undirected_connected_components((self.graph_d))
-
+        self.assertEqual(gp.connected_components(self.graph_a), a_cc)
+        self.assertEqual(gp.connected_components(self.graph_a2), a2_cc)
+        self.assertEqual(gp.connected_components(self.graph_d), d_cc)
+        self.assertEqual(gp.connected_components(self.graph_d2), d2_cc)
 
     def test_topological_sort(self):
         """ Tests for accurate topological sorting of a graph.
