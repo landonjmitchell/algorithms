@@ -1,7 +1,7 @@
-from graphs import Graph
+from graphs2 import Graph
 
 
-"""
+r"""
 Graph A:
 Undirected, Acyclic, Weighted, Disconnected, Bipartite
 
@@ -29,7 +29,7 @@ graph_a.add_edge('H', 'I', 7)
 graph_a.add_edge('Y', 'Z', 5)
 
 
-"""
+r"""
 Graph A2:
 Undirected, Acyclic, Weighted, Connected, Bipartite
 
@@ -54,7 +54,7 @@ graph_a2.add_edge('G', 'H', 1)
 graph_a2.add_edge('H', 'I', 7)
 
 
-"""
+r"""
 Graph B:
 Undirected, Cyclic, Weighted, Disconnected, Not Bipartite
 
@@ -89,7 +89,7 @@ graph_b.add_edge('H', 'I', 7)
 graph_b.add_edge('Y', 'Z', 5)
 
 
-"""
+r"""
 Graph C:
 Directed, Acyclic, Weighted, Disconnected, Bipartite
 
@@ -118,7 +118,7 @@ graph_c.add_edge('H', 'I', 7)
 graph_c.add_edge('Y', 'Z', 5)
 
 
-"""
+r"""
 Graph D:
 Directed, Cyclic, Weighted, Disconnected, Not Bipartite
 
@@ -148,7 +148,7 @@ graph_d.add_edge('I', 'G', 6)
 graph_d.add_edge('Y', 'Z', 5)
 
 
-"""
+r"""
 Graph D2:
 Directed, Cyclic, Weighted, Connected, Not Bipartite
 
