@@ -278,3 +278,16 @@ class Graph:
                 component.add(vert)
                 in_stack[vert] = False
             self.connected_components.add(frozenset(component))
+
+
+    def is_weighted(self):
+        """ Check if a graph has weighted edges
+
+        Returns
+        -------
+        weighted : bool
+            True if graph has weighted edges. False if not.
+        """
+    
+        weighted = sum([weight != 1 for weight in self.weights.values()])
+        return True if weighted else False
