@@ -1,3 +1,4 @@
+from collections import defaultdict
 import graphs, exceptions, test_graphs
 
 def dfs(graph):
@@ -31,39 +32,47 @@ def dfs(graph):
             List of graph vertices, topologically sorted. More than one valid
             topological sort may be possible for a given graph. None is
             returned if there is no way to topologically sort the graph.
-        connected_components : list of sets of any hashable values
+        connected_components : set of frozensets of hashable values
             Collections of the vertices comprising each connected component
             of the graph.
     """
 
-    global time, directed, cycle, top_sort, connected_components
-    time = 0
+    global time, directed, cycle, top_sort, stack
     directed = graph.directed
-    cycle = False
-    top_sort = []
-    connected_components = []
 
-    colors = {vertex: "white" for vertex in graph.vertices}
-    parents = {vertex: None for vertex in graph.vertices}
+    time = 0
     discovery = {}
     finish = {}
 
+    cycle = False
+    top_sort = []
+    colors = {vertex: "white" for vertex in graph.vertices}
+    parents = {vertex: None for vertex in graph.vertices}
+
+    stack = []
+    in_stack = {vertex: False for vertex in graph.vertices}
+    lows = {}
+    connected_components = set()
+
+
     for vertex in graph.vertices:
         if colors[vertex] == "white":
-            connected_components.append(set())
-            dfs_visit(graph, vertex, colors, parents, discovery, finish)
+            dfs_visit(graph, vertex, colors, parents, discovery,
+                      finish, lows, in_stack, connected_components)
 
     top_sort = None if (cycle or not directed) else top_sort[::-1]
     return colors, parents, discovery, finish, cycle, top_sort, connected_components
 
 
-def dfs_visit(graph, vertex, colors, parents, discovery, finish):
+def dfs_visit(graph, vertex, colors, parents, discovery, finish, lows, in_stack, connected_components):
     """ Updates values and recursively visits adjacent vertices.
 
         Parameters
         ----------
         graph : Graph instance
             The graph to be traversed using depth first search
+        vertex : hashable value
+            The vertex currently being visited
         colors : dict of str keyed by any hashable values
             Indication of whether keyed vertex has been visited. 'White'
             indicates that the vertex has not been visited. 'Grey' indicates
@@ -76,31 +85,50 @@ def dfs_visit(graph, vertex, colors, parents, discovery, finish):
             Discovery time of corresponding vertex
         parents : dict of any hashable values keyed by any hashable values / None
             Immediate parent of keyed vertex according to discovery order.
-        top_sort : list of any hashable values / None
-            List of graph vertices, topologically sorted.
-        connected_components : list of sets of any hashable values
+        lows : dict of int keyed by hashable value
+            The minimum discovery time of vertices reachable by the keyed
+            vertex
+        in_stack : dict of bool keyed by hashable value
+            Indication of whether the keyed vertex is currently in the stack
+            (used for Tarjan's algorithm)
+        connected_components : set of frozensets of hashable values
             Collections of the vertices comprising each connected component
             of the graph.
     """
 
-    global time, directed, cycle, top_sort, connected_components
+    global time, directed, cycle, top_sort, stack
     time += 1
 
     colors[vertex] = "grey"
     discovery[vertex] = time
-    num_cc = len(connected_components)
-    connected_components[num_cc - 1].add(vertex)
+    stack.append(vertex)
+    in_stack[vertex] = True
+    lows[vertex] = time
 
     for neighbor in graph.adjacency_list[vertex]:
         if colors[neighbor] == "white":
             parents[neighbor] = vertex
-            dfs_visit(graph, neighbor, colors, parents, discovery, finish)
-        elif (not directed) and parents[vertex] != neighbor:
-            cycle = True
-        elif directed and colors[neighbor] == "grey":
-            cycle = True
+            dfs_visit(graph, neighbor, colors, parents, discovery, finish, lows, in_stack, connected_components)
+            lows[vertex] = min(lows[vertex], lows[neighbor])
+
+        else:
+            if in_stack[neighbor]:
+                lows[vertex] = min(lows[vertex], discovery[neighbor])
+            if (not directed) and parents[vertex] != neighbor:
+                cycle = True
+            if directed and colors[neighbor] == "grey":
+                cycle = True
 
     colors[vertex] = "black"
     top_sort.append(vertex)
     time += 1
     finish[vertex] = time
+
+    if lows[vertex] == discovery[vertex]:
+        component = set()
+        vert = None
+        while vert != vertex:
+            vert = stack.pop()
+            component.add(vert)
+            in_stack[vert] = False
+        connected_components.add(frozenset(component))
