@@ -73,6 +73,7 @@ class Graph:
         self.was_dfs_explored = False
 
         self._is_weighted = None
+        self._is_strongly_connected = None
         self._has_cycle = None
         self._is_bipartite = None
 
@@ -91,6 +92,22 @@ class Graph:
             weighted = sum([weight != 0 for weight in self.weights.values()])
             self._is_weighted = True if weighted else False
         return self._is_weighted
+
+    @property
+    def is_strongly_connected(self):
+        if self._is_strongly_connected is None:
+            if len(self.connected_components) > 1:
+                self._is_strongly_connected = False
+                return False
+
+            transposed_graph = self.transposed()
+            if len(transposed_graph.connected_components) > 1:
+                self._is_strongly_connected = False
+                return False
+        
+            self._is_strongly_connected = True
+
+        return self._is_strongly_connected
 
     @property
     def has_cycle(self):
