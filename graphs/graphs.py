@@ -69,8 +69,11 @@ class Graph:
         self.adjacency_list = defaultdict(list)
         self.weights = defaultdict(int)
 
+        self.was_bfs_explored = False
+        self.was_dfs_explored = False
+
         self._is_weighted = None
-        self.has_cycle = None
+        self._has_cycle = None
         self.is_bipartite = None
 
         self.visited = {}
@@ -79,7 +82,7 @@ class Graph:
         self.finishing_times = {}
         self.distances = {}
 
-        self.topological_sort = None
+        self._topological_sort = None
         self.connected_components = None
 
     @property
@@ -88,6 +91,35 @@ class Graph:
             weighted = sum([weight != 0 for weight in self.weights.values()])
             self._is_weighted == True if weighted else False
         return self._is_weighted
+
+    @property
+    def has_cycle(self):
+        if self.was_dfs_explored:
+            return self._has_cycle
+
+        if self._has_cycle is None:
+            self.dfs_explore()
+        return self._has_cycle
+
+    @has_cycle.setter
+    def has_cycle(self, value):
+        self._has_cycle = value
+
+    @property
+    def topological_sort(self):
+        if self.was_dfs_explored:
+            return self._topological_sort
+
+        if self.has_cycle or not self.is_directed:
+            return None
+
+        if self._topological_sort is None:
+            self.dfs_explore()
+        return self._topological_sort
+
+    @topological_sort.setter
+    def topological_sort(self, value):
+        self._topological_sort = value
 
     def add_edge(self, v1, v2, weight=0):
         """ Add an edge to a graph.
@@ -152,6 +184,9 @@ class Graph:
         """
         
         if self.visited:
+            self.was_bfs_explored = False
+            self.was_dfs_explored = False
+
             self._is_weighted = None
             self.has_cycle = None
             self.is_bipartite = None
@@ -183,6 +218,8 @@ class Graph:
                 new_adj_list[neighbor].append(vertex)
         self.adjacency_list = new_adj_list
 
+        self.reset_graph_properties()
+
     def transposed(self):
         """ Return a new graph with directed edges reversed.
 
@@ -199,6 +236,7 @@ class Graph:
         for edge in self.edges:
             transposed_graph.add_edge(edge[1], edge[0], self.weights[edge])
 
+        transposed_graph.reset_graph_properties()
         return transposed_graph
 
     def bfs_explore(self, start):
@@ -208,6 +246,8 @@ class Graph:
         """
         if start not in self.vertices:
             raise exceptions.VertexNotFoundError(start)
+
+        self.was_bfs_explored = True
 
         self.is_bipartite = True
         self.distances[start] = 0
@@ -247,6 +287,8 @@ class Graph:
         in_stack = {vertex: False for vertex in self.vertices}
         lows = {}
 
+        self.was_dfs_explored = True
+        self.has_cycle = False
         self.topological_sort = []
         self.connected_components = set()
 
