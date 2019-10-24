@@ -83,7 +83,7 @@ class Graph:
         self.connected_components = None
 
     @property
-    def _is_weighted(self):
+    def is_weighted(self):
         if self._is_weighted is None:
             weighted = sum([weight != 0 for weight in self.weights.values()])
             self._is_weighted == True if weighted else False
