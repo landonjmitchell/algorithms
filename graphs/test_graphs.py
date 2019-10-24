@@ -1,4 +1,4 @@
-from graphs2 import Graph
+from graphs import Graph
 
 
 r"""
@@ -55,6 +55,34 @@ graph_a2.add_edge('H', 'I', 7)
 
 
 r"""
+Graph A3:
+Undirected, Acyclic, Unweighted, Disconnected, Bipartite
+
+    /---------B---------C---------D
+   /          |           \
+  /           |            \-------F--------E
+ /            |
+A             |
+              |  /-------I
+              | /
+              H----------G
+
+Y---------Z
+"""
+
+graph_a3 = Graph()
+graph_a3.add_edge('A', 'B')
+graph_a3.add_edge('B', 'C')
+graph_a3.add_edge('B', 'H')
+graph_a3.add_edge('C', 'D')
+graph_a3.add_edge('C', 'F')
+graph_a3.add_edge('E', 'F')
+graph_a3.add_edge('G', 'H')
+graph_a3.add_edge('H', 'I')
+graph_a3.add_edge('Y', 'Z')
+
+
+r"""
 Graph B:
 Undirected, Cyclic, Weighted, Disconnected, Not Bipartite
 
@@ -105,7 +133,7 @@ A             v                    /---(12)>>---/
 Y--(5)>>--Z
 """
 
-graph_c = Graph(directed=True)
+graph_c = Graph(is_directed=True)
 graph_c.add_edge('A', 'B', 4)
 graph_c.add_edge('B', 'C', 8)
 graph_c.add_edge('B', 'H', 11)
@@ -135,7 +163,7 @@ Y--(5)>>--Z
 
 """
 
-graph_d = Graph(directed=True)
+graph_d = Graph(is_directed=True)
 graph_d.add_edge('A', 'B', 4)
 graph_d.add_edge('B', 'C', 8)
 graph_d.add_edge('B', 'H', 11)
@@ -162,7 +190,7 @@ A             v                        |
      \-<<(8)--H------<<(1)---------G--/
 """
 
-graph_d2 = Graph(directed=True)
+graph_d2 = Graph(is_directed=True)
 graph_d2.add_edge('A', 'B', 4)
 graph_d2.add_edge('B', 'C', 8)
 graph_d2.add_edge('B', 'H', 11)
