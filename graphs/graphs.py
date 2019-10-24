@@ -63,13 +63,13 @@ class Graph:
         """
 
         self.is_directed = is_directed
-        self._is_weighted = None
 
         self.edges = []
         self.vertices = set()
         self.adjacency_list = defaultdict(list)
         self.weights = defaultdict(int)
 
+        self._is_weighted = None
         self.has_cycle = None
         self.is_bipartite = None
 
@@ -152,6 +152,7 @@ class Graph:
         """
         
         if self.visited:
+            self._is_weighted = None
             self.has_cycle = None
             self.is_bipartite = None
 
