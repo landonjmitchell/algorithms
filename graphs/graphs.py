@@ -12,12 +12,12 @@ class Graph:
  
     Parameters
     ----------
-    directed : bool
+    is_directed : bool
         Indication of whether the graph is directed
 
     Attributes
     ----------
-    directed : bool
+    is_directed : bool
         Indication of whether or not the graph is directed (defaults to False)
     edges : list of tuples (directed) or frozensets (undirected)
         Edges contained within the graph
@@ -58,11 +58,13 @@ class Graph:
         of the graph.
     """
 
-    def __init__(self, directed=False):
+    def __init__(self, is_directed=False):
         """ Initialize Graph instance 
         """
 
-        self.directed = directed
+        self.is_directed = is_directed
+        self._is_weighted = None
+
         self.edges = []
         self.vertices = set()
         self.adjacency_list = defaultdict(list)
@@ -77,10 +79,30 @@ class Graph:
         self.finishing_times = {}
         self.distances = {}
 
-        self.topological_sort = None
+        self._topological_sort = None
         self.connected_components = None
 
-    def add_edge(self, v1, v2, weight=1):
+    @property
+    def _is_weighted(self):
+        if self._is_weighted is None:
+            weighted = sum([weight != 0 for weight in self.weights.values()])
+            self._is_weighted == True if weighted else False
+        return self._is_weighted
+
+    @property
+    def topological_sort(self):
+        if not self.is_directed:
+            raise exceptions.GraphTypeError("Graph is undirected. Topological sorting is not possible")
+
+        if self._topological_sort is not None:
+            self.dfs_explore()
+        return self._topological_sort
+
+    @topological_sort.setter
+    def topological_sort(self, value):
+        self._topological_sort = value
+
+    def add_edge(self, v1, v2, weight=0):
         """ Add an edge to a graph.
 
         Add an edge to a graph by converting two hashable values to a tuple
@@ -98,13 +120,13 @@ class Graph:
             The name or ID of the second vertex - the terminating vertex in
             the case of directed graphs
         weight : numerical value
-            The weight of the given edge (defaults to 1)
+            The weight of the given edge (defaults to 0)
         """
 
         self.add_vertex(v1)
         self.add_vertex(v2)
 
-        if self.directed:
+        if self.is_directed:
             edge = (v1, v2)
             self.adjacency_list[v1].append(v2)
         else:
@@ -138,7 +160,7 @@ class Graph:
         """ Reverses directed edges of graph without creating new copy.
         """
 
-        if not self.directed:
+        if not self.is_directed:
             return
 
         self.edges = [edge[::-1] for edge in self.edges]
@@ -161,10 +183,10 @@ class Graph:
             Copy of original graph with edge directions reversed.
         """
 
-        if not self.directed:
+        if not self.is_directed:
             return copy.deepcopy(self)
 
-        transposed_graph = Graph(directed=True)
+        transposed_graph = Graph(is_directed=True)
         for edge in self.edges:
             transposed_graph.add_edge(edge[1], edge[0], self.weights[edge])
 
@@ -216,14 +238,11 @@ class Graph:
         in_stack = {vertex: False for vertex in self.vertices}
         lows = {}
 
-        self.connected_components = set()
-        self.topological_sort = []
-
         for vertex in self.vertices:
             if self.visited[vertex] == UNVISITED:
                 self.dfs_visit(vertex, lows, in_stack)
 
-        if (not self.has_cycle or self.directed):
+        if (not self.has_cycle or self.is_directed):
             self.topological_sort.reverse()
 
     def dfs_visit(self, vertex, lows, in_stack):
@@ -250,6 +269,9 @@ class Graph:
         in_stack[vertex] = True
         lows[vertex] = time
 
+        self.topological_sort = []
+        self.connected_components = set()
+
         for neighbor in self.adjacency_list[vertex]:
             if self.visited[neighbor] == UNVISITED:
                 self.parents[neighbor] = vertex
@@ -260,9 +282,9 @@ class Graph:
                 if in_stack[neighbor]:
                     lows[vertex] = min(
                         lows[vertex], self.discovery_times[neighbor])
-                if (not self.directed) and self.parents[vertex] != neighbor:
+                if (not self.is_directed) and self.parents[vertex] != neighbor:
                     self.has_cycle = True
-                if self.directed and self.visited[neighbor] == VISITING:
+                if self.is_directed and self.visited[neighbor] == VISITING:
                     self.has_cycle = True
 
         time += 1
@@ -279,15 +301,3 @@ class Graph:
                 in_stack[vert] = False
             self.connected_components.add(frozenset(component))
 
-
-    def is_weighted(self):
-        """ Check if a graph has weighted edges
-
-        Returns
-        -------
-        weighted : bool
-            True if graph has weighted edges. False if not.
-        """
-    
-        weighted = sum([weight != 1 for weight in self.weights.values()])
-        return True if weighted else False
