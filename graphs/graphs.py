@@ -83,7 +83,7 @@ class Graph:
         self.distances = {}
 
         self._topological_sort = None
-        self.connected_components = None
+        self._connected_components = None
 
     @property
     def is_weighted(self):
@@ -120,6 +120,19 @@ class Graph:
     @topological_sort.setter
     def topological_sort(self, value):
         self._topological_sort = value
+
+    @property
+    def connected_components(self):
+        if self.was_dfs_explored:
+            return self._connected_components
+
+        if self._connected_components is None:
+            self.dfs_explore()
+        return self._connected_components
+
+    @connected_components.setter
+    def connected_components(self, value):
+        self._connected_components = value
 
     def add_edge(self, v1, v2, weight=0):
         """ Add an edge to a graph.
