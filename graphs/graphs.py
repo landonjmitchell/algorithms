@@ -79,7 +79,7 @@ class Graph:
         self.finishing_times = {}
         self.distances = {}
 
-        self._topological_sort = None
+        self.topological_sort = None
         self.connected_components = None
 
     @property
@@ -88,19 +88,6 @@ class Graph:
             weighted = sum([weight != 0 for weight in self.weights.values()])
             self._is_weighted == True if weighted else False
         return self._is_weighted
-
-    @property
-    def topological_sort(self):
-        if not self.is_directed:
-            raise exceptions.GraphTypeError("Graph is undirected. Topological sorting is not possible")
-
-        if self._topological_sort is not None:
-            self.dfs_explore()
-        return self._topological_sort
-
-    @topological_sort.setter
-    def topological_sort(self, value):
-        self._topological_sort = value
 
     def add_edge(self, v1, v2, weight=0):
         """ Add an edge to a graph.
@@ -137,6 +124,8 @@ class Graph:
         self.edges.append(edge)
         self.weights[edge] = weight
 
+        self.reset_graph_properties
+
     def add_vertex(self, vertex):
         """ Add an vertex to a graph.
 
@@ -155,6 +144,25 @@ class Graph:
             self.discovery_times[vertex] = None
             self.finishing_times[vertex] = None
             self.distances[vertex] = None
+
+            self.reset_graph_properties
+
+    def reset_graph_properties(self):
+        """ Reset graph properties assigned by bfs or dfs.
+        """
+        
+        if self.visited:
+            self.has_cycle = None
+            self.is_bipartite = None
+
+            self.visited = {}
+            self.parents = {}
+            self.discovery_times = {}
+            self.finishing_times = {}
+            self.distances = {}
+
+            self.topological_sort = None
+            self.connected_components = None
 
     def transpose(self):
         """ Reverses directed edges of graph without creating new copy.
@@ -238,12 +246,17 @@ class Graph:
         in_stack = {vertex: False for vertex in self.vertices}
         lows = {}
 
+        self.topological_sort = []
+        self.connected_components = set()
+
         for vertex in self.vertices:
             if self.visited[vertex] == UNVISITED:
                 self.dfs_visit(vertex, lows, in_stack)
 
-        if (not self.has_cycle or self.is_directed):
+        if self.is_directed and not self.has_cycle:
             self.topological_sort.reverse()
+        else:
+            self.topological_sort = None
 
     def dfs_visit(self, vertex, lows, in_stack):
         """ Updates values and recursively visits adjacent vertices.
@@ -268,9 +281,6 @@ class Graph:
         stack.append(vertex)
         in_stack[vertex] = True
         lows[vertex] = time
-
-        self.topological_sort = []
-        self.connected_components = set()
 
         for neighbor in self.adjacency_list[vertex]:
             if self.visited[neighbor] == UNVISITED:
