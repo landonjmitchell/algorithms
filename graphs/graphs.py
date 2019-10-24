@@ -1,4 +1,5 @@
 import copy
+import heapq
 from collections import defaultdict
 from queue import deque
 import exceptions
@@ -458,6 +459,115 @@ class Graph:
 
         return distance, path
 
+    def dijkstra(self, start):
+        """ Return shortest weighted distances and paths from start vertex.
+
+        Return the shortest weighted distances and paths from a starting
+        vertex to all other vertices. There may be more than one valid
+        shortest path for a given end vertex. Will not work on graphs with
+        a cycle whose weights have a negative sum.
+
+        Parameters
+        ----------
+ 
+        start : Any hashable value
+            The starting vertex from which distances and paths are to be
+            calculated
+
+        Returns
+        -------
+        distances : dict of ints/floats keyed by hashable values
+            The shortest weighted distance between the starting vertex and
+            the corresponding vertex. Value will be infinite if the ending
+            vertex is not reachable from the starting vertex.
+        paths : dict of lists of hashable values keyed by hashable values
+            Lists of the ordered vertices composing a shortest path between
+            the starting vertex and the corresponding end vertex. Value will
+            be an empty list if the ending vertex is not reachable from the
+            starting vertex.
+        """
+ 
+        paths, min_heap = self.initialize_single_source(start)
+
+        while min_heap:
+            heap_distances, vertex = heapq.heappop(min_heap)
+
+            # Due to heapq's inability to update values in the heap, vertices may be added multiples times. We ignore vertices from the heap whose distance is greater than the vertex's current known minimal distance.
+            if heap_distances > self.distances[start][vertex]:
+                continue
+
+            for neighbor in self.adjacency_list[vertex]:
+                self.relax(start, vertex, neighbor, paths, min_heap)
+
+        for vertex, path in paths.items():
+            paths[vertex] = path + [vertex] if path else None
+
+        return self.distances[start], paths
+
+    def initialize_single_source(self, start):
+        """ Return initialized values for Dijkstra algorithm from start vertex.
+
+            Return data structures representing paths, and a min-heap
+            priority queue used when beginning Dijkstra's algorithm.
+
+            Parameters
+            ----------
+            start : Any hashable value
+                The starting vertex that will be used in Dijkstra's algorithm
+
+            Returns
+            -------
+            paths : dict of lists of hashable values keyed by hashable values
+                Dictionary of empty lists keyed by vertex to which will be
+                appended the shortest paths to that vertex.
+            min_heap : list of 2-tuples of int/float and hashable values
+                Data structure representing the current minimum distance and
+                vertex ID for each vertex in the graph. Initial value for starting vertex is (0, [starting vertex ID]).
+        """
+
+        paths = {vertex: [] for vertex in self.vertices}
+        self.distances[start] = {v: float('inf') for v in self.vertices}
+        self.distances[start][start] = 0
+
+        min_heap = [(float('inf'), v) for v in self.vertices if v != start]
+        min_heap.append((0, start))
+        heapq.heapify(min_heap)
+
+        return paths, min_heap
+
+    def relax(self, start, vertex, neighbor, paths, min_heap):
+        """ Update current known minimum distance and path for a given vertex.
+
+            Updates the currently known minimum distance and minimum distance
+            path for a given vertex.
+
+            Parameters
+            ----------
+            start : Any hashable value
+                The starting vertex in the current Dijkstra algorithm
+            vertex : Any hashable value
+                The vertex with the current minimal distance from the start
+            neighbor :
+                A vertex adjacent to the current minimally distanced vertex.
+            paths : dict of lists of hashable values keyed by hashable values
+                Lists of the ordered vertices composing a current shortest path
+                between the starting vertex and the corresponding end vertex.
+            min_heap : list of 2-tuples of int/float and hashable values
+                Data structure representing the current minimum distance and
+                vertex ID for each vertex in the graph.
+        """
+
+        edge = (vertex, neighbor) if self.is_directed else frozenset(
+            [vertex, neighbor])
+        edge_weight = self.weights[edge]
+
+        current_distance = self.distances[start][neighbor]
+        new_distance = self.distances[start][vertex] + edge_weight
+
+        if  current_distance > new_distance:
+            self.distances[start][neighbor] = new_distance
+            heapq.heappush(min_heap, (new_distance, neighbor))
+            paths[neighbor] = paths[vertex] + [vertex]
 
 
 
