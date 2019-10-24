@@ -459,7 +459,7 @@ class Graph:
 
         return distance, path
 
-    def dijkstra(self, start):
+    def dijkstra_distances_paths(self, start):
         """ Return shortest weighted distances and paths from start vertex.
 
         Return the shortest weighted distances and paths from a starting
@@ -568,6 +568,5 @@ class Graph:
             self.distances[start][neighbor] = new_distance
             heapq.heappush(min_heap, (new_distance, neighbor))
             paths[neighbor] = paths[vertex] + [vertex]
-
 
 
