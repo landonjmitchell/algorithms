@@ -50,7 +50,7 @@ class Graph:
         Discovery time of corresponding vertex
     finish_times : dict of int keyed by any hashable values
         Finishing time of corresponding vertex
-    distances : dict of dict of floats keyed by any hashable value
+    distances : dict of int/float keyed by any hashable value
         Distance in edges from a starting vertex to the keyed vertex.
         float('inf') if vertex is not reachable from the start vertex.
     connected_components : set of frozensets of hashable values
@@ -304,7 +304,7 @@ class Graph:
 
             Update is_bipartite, visited, parents, and distances properties of the graph using breadth first search from a given starting vertex.
         """
-
+        
         if start not in self.vertices:
             raise exceptions.VertexNotFoundError(start)
 
@@ -417,5 +417,47 @@ class Graph:
                 in_stack[vert] = False
             self.connected_components.add(frozenset(component))
 
-    
+    def shortest_unweighted_distance_path(self, start, end):
+        """ Return miminal edge distance between two vertices.
+
+        Return the shortest distance between start and end vertices in a
+        graph, ignoring edge weights, if any exist.
+
+        Parameters
+        ----------
+        start: Any hashable value
+            The starting vertex from which to calculate distance and path
+        end: Any hashable value
+            The ending vertex to which to calculate distance and path
+
+        Returns
+        -------
+        distance : int / float
+            The minimum number of edges that need to be traversed to reach
+            the end vertex from the start vertex. Returns float('inf') if end
+            is unreachable from start.
+        path : list of hashable values / None
+            A minimumal edge path between the start and end vertices,
+            inclusive of both start and end vertices. Returns None if no
+            path from start to end vertices exists.
+
+        """
+
+        self.bfs_explore(start)
+        distance = self.distances[start][end]
+
+        if self.distances[end] == float('inf'):
+            path = None
+        else:
+            path = []
+            vertex = end
+            while vertex is not None:
+                path.append(vertex)
+                vertex = self.parents[vertex]
+            path.reverse()
+
+        return distance, path
+
+
+
 
