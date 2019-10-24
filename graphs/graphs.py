@@ -8,7 +8,7 @@ UNVISITED, VISITING, VISITED = -1, 0, 1
 
 class Graph:
     """ Object representing a graph in adjacency list format. Supports directed
-        and undirected graphs, edge weights, parallel edges, and loops. 
+        and undirected graphs, edge weights, and loops. 
  
     Parameters
     ----------
@@ -74,7 +74,7 @@ class Graph:
 
         self._is_weighted = None
         self._has_cycle = None
-        self.is_bipartite = None
+        self._is_bipartite = None
 
         self.visited = {}
         self.parents = {}
@@ -89,7 +89,7 @@ class Graph:
     def is_weighted(self):
         if self._is_weighted is None:
             weighted = sum([weight != 0 for weight in self.weights.values()])
-            self._is_weighted == True if weighted else False
+            self._is_weighted = True if weighted else False
         return self._is_weighted
 
     @property
@@ -133,6 +133,30 @@ class Graph:
     @connected_components.setter
     def connected_components(self, value):
         self._connected_components = value
+
+    @property
+    def is_bipartite(self):
+        
+        if self._is_bipartite is None:
+            self.reset_bfs_vertex_values()
+            visited_vertices = set()
+            for vertex in self.vertices:
+                if vertex not in visited_vertices:
+                    self.bfs_explore(vertex)
+                    if not self.is_bipartite:
+                        return False
+
+                    self.is_bipartite = None
+                    for v in self.vertices:
+                        if self.visited[v] == VISITED:
+                            visited_vertices.add(v)
+            self.is_bipartite = True
+                      
+        return self._is_bipartite
+
+    @is_bipartite.setter
+    def is_bipartite(self, value):
+        self._is_bipartite = value
 
     def add_edge(self, v1, v2, weight=0):
         """ Add an edge to a graph.
@@ -183,14 +207,7 @@ class Graph:
         """
         if vertex not in self.vertices:
             self.vertices.add(vertex)
-
-            self.visited[vertex] = UNVISITED
-            self.parents[vertex] = None
-            self.discovery_times[vertex] = None
-            self.finishing_times[vertex] = None
-            self.distances[vertex] = None
-
-            self.reset_graph_properties
+            self.reset_graph_properties()
 
     def reset_graph_properties(self):
         """ Reset graph properties assigned by bfs or dfs.
@@ -204,14 +221,27 @@ class Graph:
             self.has_cycle = None
             self.is_bipartite = None
 
-            self.visited = {}
-            self.parents = {}
-            self.discovery_times = {}
-            self.finishing_times = {}
-            self.distances = {}
+            self.reset_all_vertex_values()
 
             self.topological_sort = None
             self.connected_components = None
+
+    def reset_bfs_vertex_values(self):
+        for vertex in self.vertices:
+            self.visited[vertex] = UNVISITED
+            self.parents[vertex] = None
+            self.distances[vertex] = None
+
+    def reset_dfs_vertex_values(self):
+        for vertex in self.vertices:
+            self.visited[vertex] = UNVISITED
+            self.parents[vertex] = None
+            self.discovery_times[vertex] = None
+            self.finishing_times[vertex] = None
+
+    def reset_all_vertex_values(self):
+        self.reset_bfs_vertex_values()
+        self.reset_dfs_vertex_values()
 
     def transpose(self):
         """ Reverses directed edges of graph without creating new copy.
@@ -260,6 +290,7 @@ class Graph:
         if start not in self.vertices:
             raise exceptions.VertexNotFoundError(start)
 
+        self.reset_bfs_vertex_values()
         self.was_bfs_explored = True
 
         self.is_bipartite = True
@@ -300,6 +331,7 @@ class Graph:
         in_stack = {vertex: False for vertex in self.vertices}
         lows = {}
 
+        self.reset_dfs_vertex_values()
         self.was_dfs_explored = True
         self.has_cycle = False
         self.topological_sort = []
@@ -366,4 +398,5 @@ class Graph:
                 component.add(vert)
                 in_stack[vert] = False
             self.connected_components.add(frozenset(component))
+
 
