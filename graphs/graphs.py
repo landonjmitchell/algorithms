@@ -50,7 +50,7 @@ class Graph:
         Discovery time of corresponding vertex
     finish_times : dict of int keyed by any hashable values
         Finishing time of corresponding vertex
-    distances : dict of int/float keyed by any hashable value
+    distances : dict of dict of floats keyed by any hashable value
         Distance in edges from a starting vertex to the keyed vertex.
         float('inf') if vertex is not reachable from the start vertex.
     connected_components : set of frozensets of hashable values
@@ -81,7 +81,7 @@ class Graph:
         self.parents = {}
         self.discovery_times = {}
         self.finishing_times = {}
-        self.distances = {}
+        self.distances = defaultdict(lambda: defaultdict(float))
 
         self._topological_sort = None
         self._connected_components = None
@@ -247,7 +247,7 @@ class Graph:
         for vertex in self.vertices:
             self.visited[vertex] = UNVISITED
             self.parents[vertex] = None
-            self.distances[vertex] = None
+            self.distances[vertex] = defaultdict(float)
 
     def reset_dfs_vertex_values(self):
         for vertex in self.vertices:
@@ -304,6 +304,7 @@ class Graph:
 
             Update is_bipartite, visited, parents, and distances properties of the graph using breadth first search from a given starting vertex.
         """
+
         if start not in self.vertices:
             raise exceptions.VertexNotFoundError(start)
 
@@ -311,7 +312,7 @@ class Graph:
         self.was_bfs_explored = True
 
         self.is_bipartite = True
-        self.distances[start] = 0
+        self.distances[start][start] = 0
         self.visited[start] = VISITING
         bipartite_colors = {vertex: None for vertex in self.vertices}
         bipartite_colors[start] = "red"
@@ -330,7 +331,7 @@ class Graph:
 
                 if self.visited[neighbor] == UNVISITED:
                     self.visited[neighbor] = VISITING
-                    self.distances[neighbor] = self.distances[vertex] + 1
+                    self.distances[start][neighbor] = self.distances[start][vertex] + 1
                     self.parents[neighbor] = vertex
                     queue.appendleft(neighbor)
 
@@ -416,4 +417,5 @@ class Graph:
                 in_stack[vert] = False
             self.connected_components.add(frozenset(component))
 
+    
 
