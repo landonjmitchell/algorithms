@@ -653,4 +653,39 @@ class Graph:
         path = self.shortest_paths(start)[end]
         return path
 
+    def shortest_distances(self, start):
+        """ Return the shortest distances from a starting vertex to all others.
+
+        Parameters
+        ----------
+        start : Any hashable value
+            The starting vertex from which to calculate the distances.
+        
+        Returns
+        -------
+        distances : a dictionary of floats
+            The minimal distance from the starting vertex to the keyed vertex. 'inf' if no path exists.
+        """
+
+        shortest_paths = self.shortest_paths(start)
+        return self.distances[start]
+
+    def shortest_distance(self, start, end):
+        """ Return the shortest distance from a start vertex to another.
+
+        Parameters
+        ----------
+        start : Any hashable value
+            The starting vertex from which to calculate the distance.
+        
+        Returns
+        -------
+        distance : float
+            The minimal distance from the starting vertex to the end vertex. 'inf' if no path exists.
+        """
+
+        if not self.distances[start][end]:
+            shortest_path = self.shortest_path(start, end)
+        return self.distances[start][end]        
+
 
