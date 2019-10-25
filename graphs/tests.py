@@ -1,9 +1,7 @@
 import math
 import unittest
 
-import graphs, exceptions, bfs, dfs, test_graphs
-import shortest_paths as sp
-import graph_properties as gp
+import graphs, exceptions, test_graphs
 
 class TestGraphFunctions(unittest.TestCase):
 
@@ -12,7 +10,9 @@ class TestGraphFunctions(unittest.TestCase):
         self.graph_a = test_graphs.graph_a
         # Undirected, Acyclic, Weighted, Disconnected, Bipartite
         self.graph_a2 = test_graphs.graph_a2
-        # Undirected, Cyclic, Weighted, Disconnected, Not Bipartite
+        # Undirected, Acyclic, Unweighted, Disconnected, Bipartite
+        self.graph_a3 = test_graphs.graph_a3
+        # Undirected, Cyclic, Weighted, Connected, Not Bipartite
         self.graph_b = test_graphs.graph_b
         # Directed, Acyclic, Weighted, Disconnected, Bipartite
         self.graph_c = test_graphs.graph_c
@@ -21,76 +21,32 @@ class TestGraphFunctions(unittest.TestCase):
         # Directed, Cyclic, Weighted, Connected, Not Bipartite
         self.graph_d2 = test_graphs.graph_d2
 
-    def test_bfs_shortest_unweighted_distance(self):
-        """ Tests for accurate minimum unweighted distance from a specified
-            starting vertex to a specified end vertex.
-        """
-
-        self.assertEqual(sp.shortest_unweighted_distance(self.graph_b, "A", "I"), 2)
-        self.assertEqual(sp.shortest_unweighted_distance(self.graph_b, "A", "Z"), math.inf)
-        self.assertEqual(sp.shortest_unweighted_distance(self.graph_a, "A", "I"), 3)
-        self.assertEqual(sp.shortest_unweighted_distance(self.graph_a, "A", "Z"), math.inf)
-        self.assertEqual(sp.shortest_unweighted_distance(self.graph_c, "A", "F"), 3)
-        self.assertEqual(sp.shortest_unweighted_distance(self.graph_c, "A", "G"), math.inf)
-        self.assertEqual(sp.shortest_unweighted_distance(self.graph_d, "A", "G"), 4)
-        self.assertEqual(sp.shortest_unweighted_distance(self.graph_d, "A", "Z"), math.inf)
-
-    def test_bfs_shortest_unweighted_path(self):
-        """ Tests for accurate path finding using bfs. A graph may have more
-            than one possible valid path between two vertices.
-        """
-
-        graph_b_path = sp.shortest_unweighted_path(self.graph_b, "A", "E")
-        self.assertIn(graph_b_path, (['A', 'B', 'C', 'D', 'E'], ['A', 'H', 'G', 'F', 'E'], ['A', 'B', 'C', 'F', 'E']))
-        self.assertIsNone(sp.shortest_unweighted_path(self.graph_b, "A", "Z"))
-        self.assertEqual(sp.shortest_unweighted_path(self.graph_a, "A", "E"), ['A', 'B', 'C', 'F', 'E'])
-        self.assertIsNone(sp.shortest_unweighted_path(self.graph_a, "A", "Z"))
-        self.assertEqual(sp.shortest_unweighted_path(self.graph_c, "A", "F"), ['A', 'B', 'C', 'F'])
-        self.assertIsNone(sp.shortest_unweighted_path(self.graph_c, "A", "Z"))
-        self.assertEqual(sp.shortest_unweighted_path(self.graph_d, "A", "G"), ['A', 'B', 'H', 'I', 'G'])
-        self.assertIsNone(sp.shortest_unweighted_path(self.graph_d, "A", "Z"))
-
-
-    def test_bfs_has_undirected_cycle(self):
-        """ Tests for bfs detection of cycle in undirected graph. Raises
-            GraphTypeError if passed a directed graph.
-        """
-
-        self.assertTrue(gp.has_undirected_cycle(self.graph_b))
-        self.assertFalse(gp.has_undirected_cycle(self.graph_a))
-        with self.assertRaises(exceptions.GraphTypeError):
-            gp.has_undirected_cycle(self.graph_c)
-        with self.assertRaises(exceptions.GraphTypeError):
-            gp.has_undirected_cycle(self.graph_d)
-
-
-    def test_bfs_is_bipartite(self):
+    def test_is_bipartite(self):
         """ Tests whether a graph is bipartite using bfs
         """
 
-        self.assertFalse(gp.is_bipartite(self.graph_b))
-        self.assertTrue(gp.is_bipartite(self.graph_a))
-        self.assertTrue(gp.is_bipartite(self.graph_c))
-        self.assertFalse(gp.is_bipartite(self.graph_d))
+        self.assertTrue(self.graph_a.is_bipartite)
+        self.assertFalse(self.graph_b.is_bipartite)
+        self.assertTrue(self.graph_c.is_bipartite)
+        self.assertFalse(self.graph_d.is_bipartite)
 
-
-    def test_dfs_has_cycle(self):
+    def test_has_cycle(self):
         """ Tests dfs detection of cycle in a graph
         """
 
-        self.assertFalse(gp.has_cycle(self.graph_a))
-        self.assertTrue(gp.has_cycle(self.graph_b))
-        self.assertFalse(gp.has_cycle(self.graph_c))
-        self.assertTrue(gp.has_cycle(self.graph_d))
+        self.assertFalse(self.graph_a.has_cycle)
+        self.assertTrue(self.graph_b.has_cycle)
+        self.assertFalse(self.graph_c.has_cycle)
+        self.assertTrue(self.graph_d.has_cycle)
 
     def test_dfs_is_strongly_connected(self):
         """ Tests if graph is (strongly) connected
         """
 
-        self.assertFalse(gp.is_strongly_connected(self.graph_a))
-        self.assertTrue(gp.is_strongly_connected(self.graph_a2))
-        self.assertFalse(gp.is_strongly_connected(self.graph_d))
-        self.assertTrue(gp.is_strongly_connected(self.graph_d2))
+        self.assertFalse(self.graph_a.is_strongly_connected)
+        self.assertTrue(self.graph_a2.is_strongly_connected)
+        self.assertFalse(self.graph_d.is_strongly_connected)
+        self.assertTrue(self.graph_a2.is_strongly_connected)
 
     def test_connected_components(self):
         """ Tests accurate grouping of vertices in the connected components
@@ -105,22 +61,20 @@ class TestGraphFunctions(unittest.TestCase):
                 frozenset({'E'}), frozenset({'D'}), frozenset({'C'})}
         d2_cc = {frozenset({'B', 'F', 'G', 'H', 'D', 'C', 'I', 'A'})}
 
-        self.assertEqual(gp.connected_components(self.graph_a), a_cc)
-        self.assertEqual(gp.connected_components(self.graph_a2), a2_cc)
-        self.assertEqual(gp.connected_components(self.graph_d), d_cc)
-        self.assertEqual(gp.connected_components(self.graph_d2), d2_cc)
+        self.assertEqual(self.graph_a.connected_components, a_cc)
+        self.assertEqual(self.graph_a2.connected_components, a2_cc)
+        self.assertEqual(self.graph_d.connected_components, d_cc)
+        self.assertEqual(self.graph_d2.connected_components, d2_cc)
 
     def test_topological_sort(self):
         """ Tests for accurate topological sorting of a graph.
             Should return None if topological sorting is not possible.
         """
 
-        with self.assertRaises(exceptions.GraphTypeError):
-            gp.topological_sort(self.graph_a)
-        with self.assertRaises(exceptions.GraphTypeError):
-            gp.topological_sort(self.graph_b)
+        self.assertIsNone(self.graph_a.topological_sort)
+        self.assertIsNone(self.graph_b.topological_sort)
 
-        top_sort_graph_c = gp.topological_sort(self.graph_c)
+        top_sort_graph_c = self.graph_c.topological_sort
         indices = {val: i for i, val in enumerate(top_sort_graph_c)}
         for vertex in ['B', 'C', 'D', 'F', 'H', 'I']:
             self.assertLess(indices['A'], indices[vertex])
@@ -129,36 +83,33 @@ class TestGraphFunctions(unittest.TestCase):
         self.assertLess(indices['H'], indices['I'])
         self.assertLess(indices['Y'], indices['Z'])
 
-        self.assertIsNone(gp.topological_sort(self.graph_d))
+        self.assertIsNone(self.graph_d.topological_sort)
 
+    def test_shortest_paths(self):
+        a_paths = {'Z': None, 'D': ['A', 'B', 'C', 'D'], 'C': ['A', 'B', 'C'],
+                   'A': None, 'F': ['A', 'B', 'C', 'F'], 'Y': None, 
+                   'B': ['A', 'B'], 'G': ['A', 'B', 'H', 'G'], 
+                   'I': ['A', 'B', 'H', 'I'], 'H': ['A', 'B', 'H'], 
+                   'E': ['A', 'B', 'C', 'F', 'E']}
 
-    def test_dijkstra_shortest_path(self):
-        """ Tests for accurate shortest path from one vertex to another using
-            Dijkstra's algorithm. Some graphs may have multiple equal-length
-            shortest paths. Should return None if ending vertex is not
-            reachable from the starting vertex.
-        """
+        a3_paths = {'B': ['A', 'B'], 'F': ['A', 'B', 'C', 'F'], 
+                    'H': ['A', 'B', 'H'], 'Z': ['Z'], 'A': ['A'], 
+                    'Y': ['Y'], 'D': ['A', 'B', 'C', 'D'], 
+                    'I': ['A', 'B', 'H', 'I'], 'E': ['A', 'B', 'C', 'F', 'E'], 'C': ['A', 'B', 'C'], 'G': ['A', 'B', 'H', 'G']}
 
-        self.assertEqual(sp.dijkstra_shortest_path(
-            self.graph_b, 'A', 'E'), ['A', 'H', 'G', 'F', 'E'])
-        self.assertEqual(sp.dijkstra_shortest_path(
-            self.graph_b, 'A', 'I'), ['A', 'B', 'C', 'I'])
-        self.assertIsNone(sp.dijkstra_shortest_path(
-            self.graph_b, 'A', 'Z'))
+        b_paths = {'Z': None, 'C': ['A', 'B', 'C'], 'I': ['A', 'B', 'C', 'I'],
+                   'F': ['A', 'H', 'G', 'F'], 'Y': None, 'G': ['A', 'H', 'G'],
+                   'B': ['A', 'B'], 'D': ['A', 'B', 'C', 'D'], 
+                   'E': ['A', 'H', 'G', 'F', 'E'], 'H': ['A', 'H'], 'A': None}
 
-    def test_dijkstra_shortest_distance(self):
-        """ Tests for accurate shortest distance from one vertex to another
-            using Dijkstra's algorithm. Should return infinite if ending vertex
-            is not reachable from starting vertex.
-        """
+        c_paths = {'E': None, 'C': ['A', 'B', 'C'], 'H': ['A', 'B', 'H'], 
+                   'F': ['A', 'B', 'C', 'F'], 'G': None, 'A': None, 'Y': None, 'I': ['A', 'B', 'H', 'I'], 'Z': None, 'B': ['A', 'B'], 
+                   'D': ['A', 'B', 'C', 'D']}
 
-        self.assertEqual(sp.dijkstra_shortest_distance(
-            self.graph_b, 'A', 'E'), 21)
-        self.assertEqual(sp.dijkstra_shortest_distance(
-            self.graph_b, 'A', 'I'), 14)
-        self.assertEqual(sp.dijkstra_shortest_distance(
-            self.graph_b, 'A', 'Z'), float('inf'))
-
+        self.assertEqual(self.graph_a.shortest_paths('A'), a_paths)
+        self.assertEqual(self.graph_a3.shortest_paths('A'), a3_paths)
+        self.assertEqual(self.graph_b.shortest_paths('A'), b_paths)
+        self.assertEqual(self.graph_c.shortest_paths('A'), c_paths)
 
 if __name__ == "__main__":
     unittest.main()
