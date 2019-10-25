@@ -418,48 +418,69 @@ class Graph:
                 in_stack[vert] = False
             self.connected_components.add(frozenset(component))
 
-    def shortest_unweighted_distance_path(self, start, end):
-        """ Return miminal edge distance between two vertices.
+    def shortest_unweighted_paths(self, start):
+        """ Return miminal edge paths from a starting vertex.
 
-        Return the shortest distance between start and end vertices in a
-        graph, ignoring edge weights, if any exist.
+        Return a shortest path between a start vertex and all other vertices in the graph, ignoring edge weights, if any exist. 
 
         Parameters
         ----------
         start: Any hashable value
-            The starting vertex from which to calculate distance and path
-        end: Any hashable value
-            The ending vertex to which to calculate distance and path
+            The starting vertex from which to calculate the paths.
 
         Returns
         -------
-        distance : int / float
-            The minimum number of edges that need to be traversed to reach
-            the end vertex from the start vertex. Returns float('inf') if end
-            is unreachable from start.
-        path : list of hashable values / None
-            A minimumal edge path between the start and end vertices,
-            inclusive of both start and end vertices. Returns None if no
-            path from start to end vertices exists.
+        paths : dict of lists of hashable values / None
+            A dictionary of minimumal edge paths between the start vertex and all other vertices. Path values are None if no path exists from start vertex to the corresponding vertex.
 
         """
 
         self.bfs_explore(start)
-        distance = self.distances[start][end]
 
-        if self.distances[end] == float('inf'):
-            path = None
-        else:
-            path = []
-            vertex = end
-            while vertex is not None:
-                path.append(vertex)
-                vertex = self.parents[vertex]
-            path.reverse()
+        paths = {vertex: [] for vertex in self.vertices}
+        for vertex in self.vertices:
+            if self.distances[vertex] == float('inf'):
+                path = None
+            else:
+                path = []
+                current_vertex = vertex
+                while current_vertex is not None:
+                    path.append(current_vertex)
+                    current_vertex = self.parents[current_vertex]
+                path.reverse()
+            paths[vertex] = path
 
-        return distance, path
+        return paths
 
-    def dijkstra_distances_paths(self, start):
+    def shortest_directed_acyclic_paths(self, start):
+        """ Return miminal weight paths from a starting vertex.
+
+        Return a shortest weight path between a start vertex and all other vertices in the graph. 
+
+        Parameters
+        ----------
+        start: Any hashable value
+            The starting vertex from which to calculate the paths.
+
+        Returns
+        -------
+        paths : dict of lists of hashable values / None
+            A dictionary of minimumal weight paths between the start vertex and all other vertices. Path values are None if no path exists from start vertex to the corresponding vertex.
+
+        """
+        topolgical_sort = self.topological_sort
+        paths, min_heap = self.initialize_single_source(start)
+
+        for vertex in topolgical_sort:
+            for neighbor in self.adjacency_list[vertex]:
+                self.relax(start, vertex, neighbor, paths, min_heap)
+
+        for vertex, path in paths.items():
+            paths[vertex] = path + [vertex] if path else None
+
+        return paths
+        
+    def dijkstra_shortest_paths(self, start):
         """ Return shortest weighted distances and paths from start vertex.
 
         Return the shortest weighted distances and paths from a starting
@@ -502,7 +523,7 @@ class Graph:
         for vertex, path in paths.items():
             paths[vertex] = path + [vertex] if path else None
 
-        return self.distances[start], paths
+        return paths
 
     def initialize_single_source(self, start):
         """ Return initialized values for Dijkstra algorithm from start vertex.
@@ -568,5 +589,68 @@ class Graph:
             self.distances[start][neighbor] = new_distance
             heapq.heappush(min_heap, (new_distance, neighbor))
             paths[neighbor] = paths[vertex] + [vertex]
+
+    def shortest_paths(self, start):
+        """ Return miminal paths from a starting vertex.
+
+        Return a shortest path between a start vertex and all other vertices in the graph. Distance measured in edges for unweighted paths. 
+
+        Parameters
+        ----------
+        start: Any hashable value
+            The starting vertex from which to calculate the paths.
+
+        Returns
+        -------
+        paths : dict of lists of hashable values / None
+            A dictionary of minimumal paths between the start vertex and all other vertices. Path values are None if no path exists from start vertex to the corresponding vertex.
+
+        Raises
+        ------
+        VertexNotFoundError:
+            When either the start argument is not a vertex in the graph.
+        """
+
+        if start not in self.vertices:
+            raise exceptions.VertexNotFoundError(start)
+
+        if not self.is_weighted:
+            paths = self.shortest_unweighted_paths(start)
+        elif self.is_directed and not self.has_cycle:
+            paths = self.shortest_directed_acyclic_paths(start)
+        else:
+            paths = self.dijkstra_shortest_paths(start)
+
+        return paths
+
+    def shortest_path(self, start, end):
+        """ Return a miminal path between two vertices.
+
+        Return a shortest path between a start vertex and an end vertex. Distance measured in edges for unweighted graphs. 
+
+        Parameters
+        ----------
+        start: Any hashable value
+            The starting vertex from which to calculate the path.
+        end: Any hashable value
+            The end vertex from which to calculate the path.
+
+        Returns
+        -------
+        path : a lists of hashable values / None
+            A list of vertices comprosing a minimal path between the start and end vertices. None if no path exists from the start to end.
+
+        Raises
+        ------
+        VertexNotFoundError:
+            When either the start or end arguments are not vertices in the graph.
+
+        """
+        for vertex in (start, end):
+            if vertex not in self.vertices:
+                raise exceptions.VertexNotFoundError(vertex)
+
+        path = self.shortest_paths(start)[end]
+        return path
 
 
