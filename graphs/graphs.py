@@ -74,6 +74,7 @@ class Graph:
         self.was_dfs_explored = False
 
         self._is_weighted = None
+        self._has_negative_edge = None
         self._is_strongly_connected = None
         self._has_cycle = None
         self._is_bipartite = None
@@ -93,6 +94,16 @@ class Graph:
             weighted = sum([weight != 0 for weight in self.weights.values()])
             self._is_weighted = True if weighted else False
         return self._is_weighted
+
+    @property
+    def has_negative_edge(self):
+        if self._has_negative_edge is None:
+            self._has_negative_edge = False
+            for weight in self.weights.values():
+                if weight < 0:
+                    self._has_negative_edge = True
+                    break
+        return self._has_negative_edge
 
     @property
     def is_strongly_connected(self):
@@ -236,6 +247,8 @@ class Graph:
             self.was_dfs_explored = False
 
             self._is_weighted = None
+            self.has_negative_edge = None
+            self._is_strongly_connected = None
             self.has_cycle = None
             self.is_bipartite = None
 
@@ -687,4 +700,5 @@ class Graph:
         if not self.distances[start][end]:
             shortest_path = self.shortest_path(start, end)
         return self.distances[start][end]        
+
 
