@@ -700,7 +700,60 @@ class Graph:
         """
 
         if not self.distances[start][end]:
-            shortest_path = self.shortest_path(start, end)
+            _ = self.shortest_path(start, end)
         return self.distances[start][end]        
+
+    def minimum_spanning_tree(self):
+        """ Return the minimum spanning tree of a graph.
+
+        Return the minimum spanning tree of a connected, undirected graph using Prim's algorithm.
+
+        Returns
+        -------
+        msp : a Graph instance
+            A new graph with only the edges included in the minimal spanning tree of the original.
+
+        Raises
+        ------
+        GraphTypeError :
+            If the graph is not connected OR the graph is directed.
+        """
+
+        if self.is_directed:
+            raise exceptions.GraphTypeError('Graph is directed')
+
+        if not self.is_strongly_connected:
+            raise exceptions.GraphTypeError('Graph is not connected')
+
+
+        start = next(iter(self.vertices))
+        msp = Graph()
+        msp.parents[start] = None
+        keys = {v: float('inf') for v in self.vertices}
+        keys[start] = 0
+
+        min_heap = [(float('inf'), v) for v in self.vertices if v != start]
+        min_heap.append((0, start))
+        heapq.heapify(min_heap)
+
+        while min_heap:
+            heap_key, vertex = heapq.heappop(min_heap)
+            if heap_key > keys[vertex] or vertex in msp.vertices:
+                continue
+
+            parent = msp.parents[vertex]
+            if parent is not None:
+                weight = self.weights[frozenset((parent, vertex))]
+                msp.add_edge(parent, vertex, weight)
+
+            for neighbor in self.adjacency_list[vertex]:
+                edge_weight = self.weights[frozenset([vertex, neighbor])]
+
+                if neighbor not in msp.vertices and keys[neighbor] > edge_weight:
+                    keys[neighbor] = edge_weight
+                    heapq.heappush(min_heap, (edge_weight, neighbor))
+                    msp.parents[neighbor] = vertex
+
+        return msp
 
 
