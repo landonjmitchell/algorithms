@@ -520,7 +520,7 @@ class Graph:
             be an empty list if the ending vertex is not reachable from the
             starting vertex.
         """
- 
+
         paths, min_heap = self.initialize_single_source(start)
 
         while min_heap:
@@ -631,8 +631,10 @@ class Graph:
             paths = self.shortest_unweighted_paths(start)
         elif self.is_directed and not self.has_cycle:
             paths = self.shortest_directed_acyclic_paths(start)
-        else:
+        elif not self.has_negative_edge:
             paths = self.dijkstra_shortest_paths(start)
+        else:
+            raise NotImplementedError('Negative edge weight cyclic graph shortest paths detection not yet implemented')
 
         return paths
 
