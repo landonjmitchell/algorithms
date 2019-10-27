@@ -782,12 +782,12 @@ class Graph:
         for i in range(end):
             for j in range(start, end):
                 weight = matrix[i][j]
-                if weight is not None and (not zero_weights and weight):
-                    graph.add_edge(i, j, weight)
+                if weight is None or (not zero_weights and not weight):
+                    continue
+                graph.add_edge(i, j, weight)
             start += 1 if not directed else 0
 
         return graph
-
 
 
 
