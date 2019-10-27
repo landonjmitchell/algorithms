@@ -756,4 +756,38 @@ class Graph:
 
         return msp
 
+    @staticmethod
+    def to_graph(matrix, directed=False, zero_weights=False):   
+        """ Convert 2D matrix to Graph instance.
+
+        Paramaters
+        ----------
+        matrix : 2D array
+            Adjacency matrix formatted graph representation.
+        directed : bool
+            Indication of if graph is directed. Defaults to False.
+        zero_weights: bool
+            Indication if zero weight edges are permitted. If not, 0 weighted edges in the matrix will be treated as non-edges. Deafaults to False.
+
+        Returns
+        -------
+        graph : Graph instance
+            Graph instance with vertices, edges, weights, and adjacency list derived from the matrix.
+        """
+
+        graph = Graph(is_directed=directed)
+
+        start = 0
+        end = len(matrix)
+        for i in range(end):
+            for j in range(start, end):
+                weight = matrix[i][j]
+                if weight is not None and (not zero_weights and weight):
+                    graph.add_edge(i, j, weight)
+            start += 1 if not directed else 0
+
+        return graph
+
+
+
 
