@@ -202,3 +202,31 @@ graph_d2.add_edge('G', 'H', 1)
 graph_d2.add_edge('H', 'A', 8)
 graph_d2.add_edge('H', 'I', 7)
 graph_d2.add_edge('I', 'G', 6)
+
+
+r"""
+Graph D3:
+Directed, Cyclic, Weighted, Connected, Not Bipartite, Negative Cycle
+
+    /--(4)>>--B----(8)>>---C--(7)>>--D--(1)>>
+   /          |             \               /
+  /          (11)            \--(4)>>--F --/
+A             v                        |
+  \           v                       (3)
+   \          |  /--(-7)>>-I--(6)>>     v
+    \         | /                 \    v
+     \-<<(8)--H------<<(1)---------G--/
+"""
+
+graph_d3 = Graph(is_directed=True)
+graph_d3.add_edge('A', 'B', 4)
+graph_d3.add_edge('B', 'C', 8)
+graph_d3.add_edge('B', 'H', 11)
+graph_d3.add_edge('C', 'D', 7)
+graph_d3.add_edge('C', 'F', 4)
+graph_d3.add_edge('D', 'F', 1)
+graph_d3.add_edge('F', 'G', 3)
+graph_d3.add_edge('G', 'H', 1)
+graph_d3.add_edge('H', 'A', 8)
+graph_d3.add_edge('H', 'I', -7)
+graph_d3.add_edge('I', 'G', 6)
