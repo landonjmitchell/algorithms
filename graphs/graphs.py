@@ -8,8 +8,9 @@ UNVISITED, VISITING, VISITED = -1, 0, 1
 
 
 class Graph:
-    """ Object representing a graph in adjacency list format. Supports directed
-        and undirected graphs, edge weights, and loops. 
+    """ Object representing a simple graph in adjacency list format. 
+    
+        Supports directed and undirected graphs, edge weights, and loops. Methods are designed to prevent the need for duplicating expensive operations by memoizing key graph attributes.
  
     Parameters
     ----------
@@ -67,7 +68,7 @@ class Graph:
 
         self.edges = []
         self.vertices = set()
-        self.adjacency_list = defaultdict(list)
+        self.adjacency_list = defaultdict(set)
         self.weights = defaultdict(int)
 
         self.was_bfs_explored = False
@@ -213,11 +214,11 @@ class Graph:
 
         if self.is_directed:
             edge = (v1, v2)
-            self.adjacency_list[v1].append(v2)
+            self.adjacency_list[v1].add(v2)
         else:
             edge = frozenset([v1, v2])
-            self.adjacency_list[v1].append(v2)
-            self.adjacency_list[v2].append(v1)
+            self.adjacency_list[v1].add(v2)
+            self.adjacency_list[v2].add(v1)
 
         self.edges.append(edge)
         self.weights[edge] = weight
@@ -788,6 +789,5 @@ class Graph:
             start += 1 if not directed else 0
 
         return graph
-
 
 
