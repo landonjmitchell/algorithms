@@ -256,7 +256,7 @@ class Graph:
             self.is_bipartite = None
 
             self.reset_all_vertex_values()
-            self.edge_distances[vertex] = defaultdict(float)
+            self.edge_distances = defaultdict(lambda: defaultdict(float))
             self.distances = defaultdict(lambda: defaultdict(float))
 
             self.topological_sort = None
@@ -494,17 +494,17 @@ class Graph:
                 self.relax(start, vertex, neighbor, paths, min_heap)
 
         for vertex, path in paths.items():
-            paths[vertex] = path + [vertex] if path else None
+            paths[vertex] = path + [vertex] if path else [vertex]
 
         return paths
         
     def dijkstra_shortest_paths(self, start):
-        """ Return shortest weighted distances and paths from start vertex.
+        """ Return shortest weighted paths from start vertex.
 
-        Return the shortest weighted distances and paths from a starting
+        Return the shortest weighted paths from a starting
         vertex to all other vertices. There may be more than one valid
         shortest path for a given end vertex. Will not work on graphs with
-        a cycle whose weights have a negative sum.
+        negative weighted edges.
 
         Parameters
         ----------
@@ -515,15 +515,9 @@ class Graph:
 
         Returns
         -------
-        distances : dict of ints/floats keyed by hashable values
-            The shortest weighted distance between the starting vertex and
-            the corresponding vertex. Value will be infinite if the ending
-            vertex is not reachable from the starting vertex.
         paths : dict of lists of hashable values keyed by hashable values
             Lists of the ordered vertices composing a shortest path between
-            the starting vertex and the corresponding end vertex. Value will
-            be an empty list if the ending vertex is not reachable from the
-            starting vertex.
+            the starting vertex and the corresponding end vertex.
         """
 
         paths, min_heap = self.initialize_single_source(start)
@@ -539,7 +533,7 @@ class Graph:
                 self.relax(start, vertex, neighbor, paths, min_heap)
 
         for vertex, path in paths.items():
-            paths[vertex] = path + [vertex] if path else None
+            paths[vertex] = path + [vertex] if path else [vertex]
 
         return paths
 
@@ -608,6 +602,77 @@ class Graph:
             heapq.heappush(min_heap, (new_distance, neighbor))
             paths[neighbor] = paths[vertex] + [vertex]
 
+    def bellman_ford_shortest_paths(self, start):
+        """ Return shortest weighted paths from a start vertex.
+
+        Return the shortest weighted paths from a starting vertex to all other vertices. There may be more than one valid shortest path for a given end vertex.
+
+        Parameters
+        ----------
+        start : Any hashable object
+            The starting vertex from which distances and paths are to be
+            calculated
+
+        Returns
+        -------
+        paths : dict of lists of hashable objects keyed by hashable objects
+            Lists of the ordered vertices composing a shortest path between
+            the starting vertex and the corresponding end vertex.
+        """
+
+        negative_cycle = False
+        paths = {vertex: [] for vertex in self.vertices}
+        self.distances[start] = {v: float('inf') for v in self.vertices}
+        self.distances[start][start] = 0
+
+        num_vertices = len(self.vertices)
+        for _ in range(num_vertices):
+            for edge in self.edges:
+                self.bellman_ford_relax(start, edge, paths)
+
+        for edge in self.edges:
+            v1, v2 = edge
+            edge_weight = self.weights[edge]
+            current_distance = self.distances[v1][v2]
+            new_distance = self.distances[v1][v2] + edge_weight
+
+            if current_distance > new_distance:
+                negative_cycle = True
+                break
+
+        if negative_cycle:
+            raise exceptions.GraphTypeError('Graph has a negative cycle')
+
+        for vertex, path in paths.items():
+            paths[vertex] = path + [vertex] if path else [vertex]
+
+        return paths
+
+    def bellman_ford_relax(self, start, edge, paths):
+        """ Update current known minimum distance and path for a given vertex.
+
+            Updates the currently known minimum distance and minimum distance
+            path for a given vertex.
+
+            Parameters
+            ----------
+            start : Any hashable object
+                The starting vertex in the current Bellman Ford algorithm
+            edge : tuple or frozenset of hashable objects
+                The edge in the graph currently being relaxed
+            paths : dict of lists of hashable objects keyed by hashable objects
+                Lists of the ordered vertices composing a current shortest path
+                between the starting vertex and the corresponding end vertex.
+        """
+        v1, v2 = edge
+        edge_weight = self.weights[edge]
+        current_distance = self.distances[start][v2]
+        new_distance = self.distances[start][v1] + edge_weight
+        
+        if current_distance > new_distance:
+            self.distances[start][v2] = new_distance
+            paths[v2] = paths[v1] + [v1]
+
     def shortest_paths(self, start):
         """ Return miminal paths from a starting vertex.
 
@@ -639,7 +704,7 @@ class Graph:
         elif not self.has_negative_edge:
             paths = self.dijkstra_shortest_paths(start)
         else:
-            raise NotImplementedError('Negative edge weight cyclic graph shortest paths detection not yet implemented')
+            paths = self.bellman_ford_shortest_paths(start)
 
         return paths
 
@@ -803,3 +868,5 @@ class Graph:
         return graph
 
 
+
+    
