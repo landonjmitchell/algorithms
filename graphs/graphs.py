@@ -67,7 +67,7 @@ class Graph:
 
         self.is_directed = is_directed
 
-        self.edges = []
+        self.edges = set()
         self.vertices = set()
         self.adjacency_list = defaultdict(set)
         self.weights = defaultdict(int)
@@ -222,7 +222,7 @@ class Graph:
             self.adjacency_list[v1].add(v2)
             self.adjacency_list[v2].add(v1)
 
-        self.edges.append(edge)
+        self.edges.add(edge)
         self.weights[edge] = weight
 
         self.reset_graph_properties
