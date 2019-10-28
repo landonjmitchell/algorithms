@@ -39,7 +39,7 @@ class TestGraphFunctions(unittest.TestCase):
         self.assertFalse(self.graph_c.has_cycle)
         self.assertTrue(self.graph_d.has_cycle)
 
-    def test_dfs_is_strongly_connected(self):
+    def test_is_strongly_connected(self):
         """ Tests if graph is (strongly) connected
         """
 
