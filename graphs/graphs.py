@@ -52,9 +52,10 @@ class Graph:
         Discovery time of corresponding vertex
     finish_times : dict of int keyed by any hashable values
         Finishing time of corresponding vertex
-    distances : dict of int/float keyed by any hashable value
-        Distance in edges from a starting vertex to the keyed vertex.
-        float('inf') if vertex is not reachable from the start vertex.
+    edge_distances : dict of dicts of floats keyed by hashable value
+        Unweighted edge distances from all vertices to all others. Value is 'inf' when no path exists between vertices. 
+    distances : dict of dicts of floats keyed by hashable value
+        Weighted distances from all vertices to all others. Value is 'inf' when no path exists between vertices. 
     connected_components : set of frozensets of hashable values
         Collections of the vertices comprising each connected component
         of the graph.
@@ -84,6 +85,7 @@ class Graph:
         self.parents = {}
         self.discovery_times = {}
         self.finishing_times = {}
+        self.edge_distances = defaultdict(lambda: defaultdict(float))
         self.distances = defaultdict(lambda: defaultdict(float))
 
         self._topological_sort = None
@@ -254,6 +256,8 @@ class Graph:
             self.is_bipartite = None
 
             self.reset_all_vertex_values()
+            self.edge_distances[vertex] = defaultdict(float)
+            self.distances = defaultdict(lambda: defaultdict(float))
 
             self.topological_sort = None
             self.connected_components = None
@@ -262,7 +266,6 @@ class Graph:
         for vertex in self.vertices:
             self.visited[vertex] = UNVISITED
             self.parents[vertex] = None
-            self.distances[vertex] = defaultdict(float)
 
     def reset_dfs_vertex_values(self):
         for vertex in self.vertices:
@@ -324,10 +327,11 @@ class Graph:
             raise exceptions.VertexNotFoundError(start)
 
         self.reset_bfs_vertex_values()
+        self.edge_distances[start] = defaultdict(float)
         self.was_bfs_explored = True
 
         self.is_bipartite = True
-        self.distances[start][start] = 0
+        self.edge_distances[start][start] = 0
         self.visited[start] = VISITING
         bipartite_colors = {vertex: None for vertex in self.vertices}
         bipartite_colors[start] = "red"
@@ -346,7 +350,7 @@ class Graph:
 
                 if self.visited[neighbor] == UNVISITED:
                     self.visited[neighbor] = VISITING
-                    self.distances[start][neighbor] = self.distances[start][vertex] + 1
+                    self.edge_distances[start][neighbor] = self.edge_distances[start][vertex] + 1
                     self.parents[neighbor] = vertex
                     queue.appendleft(neighbor)
 
@@ -453,7 +457,7 @@ class Graph:
 
         paths = {vertex: [] for vertex in self.vertices}
         for vertex in self.vertices:
-            if self.distances[vertex] == float('inf'):
+            if self.edge_distances[vertex] == float('inf'):
                 path = None
             else:
                 path = []
@@ -680,11 +684,14 @@ class Graph:
         Returns
         -------
         distances : a dictionary of floats
-            The minimal distance from the starting vertex to the keyed vertex. 'inf' if no path exists.
+            The minimal distance from the starting vertex to the keyed vertex. 'inf' if no path exists. Returns edge distances for unweighted graphs.
         """
 
-        shortest_paths = self.shortest_paths(start)
-        return self.distances[start]
+        _ = self.shortest_paths(start)
+        if not self.is_weighted:
+            return self.edge_distances[start]
+        else:
+            return self.distances[start]
 
     def shortest_distance(self, start, end):
         """ Return the shortest distance from a start vertex to another.
@@ -697,12 +704,17 @@ class Graph:
         Returns
         -------
         distance : float
-            The minimal distance from the starting vertex to the end vertex. 'inf' if no path exists.
+            The minimal distance from the starting vertex to the end vertex. 'inf' if no path exists. Returns edge distances for unweighted graphs.
         """
 
-        if not self.distances[start][end]:
-            _ = self.shortest_path(start, end)
-        return self.distances[start][end]        
+        if self.is_weighted:
+            if not self.distances[start][end]:
+                _ = self.shortest_path(start, end)
+            return self.distances[start][end]   
+        else:
+            if not self.edge_distances[start][end]:
+                _ = self.shortest_path(start, end)
+            return self.edge_distances[start][end]     
 
     def minimum_spanning_tree(self):
         """ Return the minimum spanning tree of a graph.
