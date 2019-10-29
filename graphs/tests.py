@@ -87,7 +87,7 @@ class TestGraphFunctions(unittest.TestCase):
 
     def test_shortest_paths(self):
         a_paths = {'Z': None, 'D': ['A', 'B', 'C', 'D'], 'C': ['A', 'B', 'C'],
-                   'A': None, 'F': ['A', 'B', 'C', 'F'], 'Y': None, 
+                   'A': ['A'], 'F': ['A', 'B', 'C', 'F'], 'Y': None, 
                    'B': ['A', 'B'], 'G': ['A', 'B', 'H', 'G'], 
                    'I': ['A', 'B', 'H', 'I'], 'H': ['A', 'B', 'H'], 
                    'E': ['A', 'B', 'C', 'F', 'E']}
@@ -100,10 +100,10 @@ class TestGraphFunctions(unittest.TestCase):
         b_paths = {'Z': None, 'C': ['A', 'B', 'C'], 'I': ['A', 'B', 'C', 'I'],
                    'F': ['A', 'H', 'G', 'F'], 'Y': None, 'G': ['A', 'H', 'G'],
                    'B': ['A', 'B'], 'D': ['A', 'B', 'C', 'D'], 
-                   'E': ['A', 'H', 'G', 'F', 'E'], 'H': ['A', 'H'], 'A': None}
+                   'E': ['A', 'H', 'G', 'F', 'E'], 'H': ['A', 'H'], 'A': ['A']}
 
         c_paths = {'E': None, 'C': ['A', 'B', 'C'], 'H': ['A', 'B', 'H'], 
-                   'F': ['A', 'B', 'C', 'F'], 'G': None, 'A': None, 'Y': None, 'I': ['A', 'B', 'H', 'I'], 'Z': None, 'B': ['A', 'B'], 
+                   'F': ['A', 'B', 'C', 'F'], 'G': None, 'A': ['A'], 'Y': None, 'I': ['A', 'B', 'H', 'I'], 'Z': None, 'B': ['A', 'B'],
                    'D': ['A', 'B', 'C', 'D']}
 
         self.assertEqual(self.graph_a.shortest_paths('A'), a_paths)
