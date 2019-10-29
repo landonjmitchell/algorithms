@@ -1,7 +1,7 @@
 import math
 import unittest
 
-import graphs, exceptions, test_graphs
+import exceptions, test_graphs
 
 class TestGraphFunctions(unittest.TestCase):
 
