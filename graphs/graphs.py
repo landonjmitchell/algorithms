@@ -133,6 +133,9 @@ class Graph:
 
     @property
     def topological_sort(self):
+        if self.discovery_times:
+            return self._topological_sort
+
         if self.has_cycle or not self.is_directed:
             return None
 
@@ -146,6 +149,9 @@ class Graph:
 
     @property
     def connected_components(self):
+        if self.discovery_times:
+            return self._connected_components
+
         if not self._connected_components:
             self.dfs_explore()
         return self._connected_components
@@ -477,7 +483,10 @@ class Graph:
                 self.relax(start, vertex, neighbor, paths, min_heap)
 
         for vertex, path in paths.items():
-            paths[vertex] = path + [vertex] if path else [vertex]
+            if vertex == start:
+                paths[vertex] = [vertex]
+            else:
+                paths[vertex] = path + [vertex] if path else None
 
         return paths
         
@@ -516,7 +525,10 @@ class Graph:
                 self.relax(start, vertex, neighbor, paths, min_heap)
 
         for vertex, path in paths.items():
-            paths[vertex] = path + [vertex] if path else [vertex]
+            if vertex == start:
+                paths[vertex] = [vertex]
+            else:
+                paths[vertex] = path + [vertex] if path else None
 
         return paths
 
@@ -627,7 +639,10 @@ class Graph:
             raise exceptions.GraphTypeError('Graph has a negative cycle')
 
         for vertex, path in paths.items():
-            paths[vertex] = path + [vertex] if path else [vertex]
+            if vertex == start:
+                path[vertex] = [vertex]
+            else:
+                paths[vertex] = path + [vertex] if path else None
 
         return paths
 
@@ -851,37 +866,3 @@ class Graph:
         return graph
 
 
-if __name__ == "__main__":
-    import test_graphs
-
-    # A: Undirected, Acyclic, Weighted, Disconnected, Bipartite
-    # A2: Undirected, Acyclic, Weighted, Connected, Bipartite
-    # A3: Undirected, Acyclic, Unweighted, Disconnected, Bipartite
-    # B: Undirected, Cyclic, Weighted, Disconnected, Not Bipartite
-    # C: Directed, Acyclic, Weighted, Disconnected, Bipartite
-    # D: Directed, Cyclic, Weighted, Disconnected, Not Bipartite
-    # D2: Directed, Cyclic, Weighted, Connected, Not Bipartite
-
-    matrix = [[0, 0, 4, 1, 0],
-              [9, 0, 1, 0, 1],
-              [2, 1, 0, 0, 0],
-              [1, 1, 0, 0, 6],
-              [1, 1, 0.5, 1, 0]]
-
-    # graph = Graph.to_graph(matrix, directed=True, zero_weights=False)
-    # print(graph.edges)
-    # # print (graph.vertices)
-    # # print (graph.adjacency_list)
-    # print(graph.weights)
-
-    graph = test_graphs.graph_d2
-    paths1 = graph.bellman_ford_shortest_paths('A')
-    print (graph.distances['A'])
-    print (paths1)
-    paths2 = graph.dijkstra_shortest_paths('A')
-    print('')
-    print(graph.distances['A'])
-    print (paths2)
-    print('')
-    print (paths1 == paths2)
-    
