@@ -241,10 +241,10 @@ class Graph:
         
         if self.visited:
             self._is_weighted = None
-            self.has_negative_edge = None
+            self._has_negative_edge = None
             self._is_strongly_connected = None
-            self.has_cycle = None
-            self.is_bipartite = None
+            self._has_cycle = None
+            self._is_bipartite = None
 
             self.reset_all_vertex_values()
             self.edge_distances = defaultdict(lambda: defaultdict(float))
@@ -866,3 +866,5 @@ class Graph:
         return graph
 
 
+
+    
