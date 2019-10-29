@@ -72,9 +72,6 @@ class Graph:
         self.adjacency_list = defaultdict(set)
         self.weights = defaultdict(int)
 
-        self.was_bfs_explored = False
-        self.was_dfs_explored = False
-
         self._is_weighted = None
         self._has_negative_edge = None
         self._is_strongly_connected = None
@@ -88,8 +85,8 @@ class Graph:
         self.edge_distances = defaultdict(lambda: defaultdict(float))
         self.distances = defaultdict(lambda: defaultdict(float))
 
-        self._topological_sort = None
-        self._connected_components = None
+        self._topological_sort = []
+        self._connected_components = set()
 
     @property
     def is_weighted(self):
@@ -126,9 +123,6 @@ class Graph:
 
     @property
     def has_cycle(self):
-        if self.was_dfs_explored:
-            return self._has_cycle
-
         if self._has_cycle is None:
             self.dfs_explore()
         return self._has_cycle
@@ -139,13 +133,10 @@ class Graph:
 
     @property
     def topological_sort(self):
-        if self.was_dfs_explored:
-            return self._topological_sort
-
         if self.has_cycle or not self.is_directed:
             return None
 
-        if self._topological_sort is None:
+        if not self._topological_sort:
             self.dfs_explore()
         return self._topological_sort
 
@@ -155,10 +146,7 @@ class Graph:
 
     @property
     def connected_components(self):
-        if self.was_dfs_explored:
-            return self._connected_components
-
-        if self._connected_components is None:
+        if not self._connected_components:
             self.dfs_explore()
         return self._connected_components
 
@@ -246,9 +234,6 @@ class Graph:
         """
         
         if self.visited:
-            self.was_bfs_explored = False
-            self.was_dfs_explored = False
-
             self._is_weighted = None
             self.has_negative_edge = None
             self._is_strongly_connected = None
@@ -328,7 +313,6 @@ class Graph:
 
         self.reset_bfs_vertex_values()
         self.edge_distances[start] = defaultdict(float)
-        self.was_bfs_explored = True
 
         self.is_bipartite = True
         self.edge_distances[start][start] = 0
@@ -369,7 +353,6 @@ class Graph:
         lows = {}
 
         self.reset_dfs_vertex_values()
-        self.was_dfs_explored = True
         self.has_cycle = False
         self.topological_sort = []
         self.connected_components = set()
@@ -868,5 +851,37 @@ class Graph:
         return graph
 
 
+if __name__ == "__main__":
+    import test_graphs
 
+    # A: Undirected, Acyclic, Weighted, Disconnected, Bipartite
+    # A2: Undirected, Acyclic, Weighted, Connected, Bipartite
+    # A3: Undirected, Acyclic, Unweighted, Disconnected, Bipartite
+    # B: Undirected, Cyclic, Weighted, Disconnected, Not Bipartite
+    # C: Directed, Acyclic, Weighted, Disconnected, Bipartite
+    # D: Directed, Cyclic, Weighted, Disconnected, Not Bipartite
+    # D2: Directed, Cyclic, Weighted, Connected, Not Bipartite
+
+    matrix = [[0, 0, 4, 1, 0],
+              [9, 0, 1, 0, 1],
+              [2, 1, 0, 0, 0],
+              [1, 1, 0, 0, 6],
+              [1, 1, 0.5, 1, 0]]
+
+    # graph = Graph.to_graph(matrix, directed=True, zero_weights=False)
+    # print(graph.edges)
+    # # print (graph.vertices)
+    # # print (graph.adjacency_list)
+    # print(graph.weights)
+
+    graph = test_graphs.graph_d2
+    paths1 = graph.bellman_ford_shortest_paths('A')
+    print (graph.distances['A'])
+    print (paths1)
+    paths2 = graph.dijkstra_shortest_paths('A')
+    print('')
+    print(graph.distances['A'])
+    print (paths2)
+    print('')
+    print (paths1 == paths2)
     
