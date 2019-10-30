@@ -1,7 +1,6 @@
 import copy
 import heapq
-from collections import defaultdict
-from queue import deque
+from collections import defaultdict, deque
 import exceptions
 
 UNVISITED, VISITING, VISITED = -1, 0, 1
