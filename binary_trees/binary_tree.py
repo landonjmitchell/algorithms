@@ -11,15 +11,21 @@ class BinaryTree:
 
     @property
     def height(self):
-        if self._height is not None:
-            return self._height
+        return self.height_recursive(self.root)
 
-        if self.root is None:
-            self._height = -1
+    def height_recursive(self, root):
+
+        if root is None:
+            return -1
+        else:
+            return max(self.height_recursive(root.left) + 1, self.height_recursive(root.right) + 1)
+
+    def height_iterative(self, root):
+        if root is None:
             return -1
 
         queue = deque()
-        queue.append(self.root)
+        queue.append(root)
         height = -1
         while queue:
             height += 1
@@ -32,7 +38,6 @@ class BinaryTree:
                 if node.right is not None:
                     queue.appendleft(node.right)
 
-        self._height = height
         return height
 
     def add_node(self, node, depth, position):
