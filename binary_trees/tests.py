@@ -52,10 +52,15 @@ class TestBinaryTreeFunctions(unittest.TestCase):
         self.assertEqual(tree_e.height, 3)
 
 
-    def test_is_balanced(self):
-        """ Tests determining if binary tree is balanced.
+    def test_is_height_balanced(self):
+        """ Tests determining if binary tree is height_balanced.
         """
-        pass
+        
+        self.assertTrue(tree_a.is_height_balanced())
+        self.assertFalse(tree_b.is_height_balanced())
+        self.assertFalse(tree_c.is_height_balanced())
+        self.assertFalse(tree_d.is_height_balanced())
+        self.assertTrue(tree_e.is_height_balanced())
 
 
     def test_is_bst(self):
