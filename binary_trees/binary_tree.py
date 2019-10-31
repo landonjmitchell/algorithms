@@ -6,8 +6,34 @@ class BinaryTree:
 
     def __init__(self, root=None):
         self.root = root
-        self.depth = None
+        self._height = None
         self.size = 0
+
+    @property
+    def height(self):
+        if self._height is not None:
+            return self._height
+
+        if self.root is None:
+            self._height = -1
+            return -1
+
+        queue = deque()
+        queue.append(self.root)
+        height = -1
+        while queue:
+            height += 1
+            num_nodes = len(queue)
+            for _ in range(num_nodes):
+                node = queue.pop()
+
+                if node.left is not None:
+                    queue.appendleft(node.left)
+                if node.right is not None:
+                    queue.appendleft(node.right)
+
+        self._height = height
+        return height
 
     def is_height_balanced(self):
         pass

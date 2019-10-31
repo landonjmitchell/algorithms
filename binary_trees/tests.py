@@ -1,6 +1,6 @@
 import unittest
 
-from test_trees import (tree_a, tree_b, tree_c)
+from test_trees import (tree_a, tree_b, tree_c, tree_d, tree_e)
 from binary_tree import BinaryTree, Node
 from exceptions import MissingNodeError, NodePositionOccupiedError, NodePositionError
 
@@ -41,6 +41,16 @@ class TestBinaryTreeFunctions(unittest.TestCase):
             tree_a.value_at_node(-1, 0)
             tree_a.value_at_node(2, 3)
             tree_a.value_at_node(4, -1)
+
+    def test_height(self):
+        """ Tests accurate height value of a tree.
+        """
+
+        self.assertEqual(tree_a.height, 2)
+        self.assertEqual(tree_b.height, 4)
+        self.assertEqual(tree_d.height, 3)
+        self.assertEqual(tree_e.height, 3)
+
 
     def test_is_balanced(self):
         """ Tests determining if binary tree is balanced.
