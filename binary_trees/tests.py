@@ -25,7 +25,7 @@ class TestBinaryTreeFunctions(unittest.TestCase):
             tree_a.add_node(Node(55), 4, -1)
 
         # removed added node
-        tree_a.root.left.left = None
+        tree_a.remove_node(2, 0)
 
     def test_data_at_node(self):
         """ Tests returning the data of a node at a specific position.

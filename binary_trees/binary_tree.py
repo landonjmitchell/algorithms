@@ -1,6 +1,6 @@
 from collections import deque
 
-from exceptions import MissingNodeError, NodePositionError, NodePositionOccupiedError
+from exceptions import MissingNodeError, NodePositionError, NodePositionOccupiedError, NodeHasChildrenError
 
 class BinaryTree:
 
@@ -36,7 +36,17 @@ class BinaryTree:
         return height
 
     def add_node(self, node, depth, position):
+        """ Add node at given tree position.
 
+            Parameters
+            ----------
+            node : Node instance
+                node to be added
+            depth : int
+                depth of node
+            position : int
+                horizontal position of node
+        """
         if depth == 0:
             self.root = node
             return
@@ -50,9 +60,61 @@ class BinaryTree:
         else:
             parent.add_left_child(node)
 
+    def remove_node(self, depth, position):
+        """ Remove node at given tree position.
+
+            Parameters
+            ----------
+            depth : int
+                depth of node
+            position : int
+                horizontal position of node
+
+            Raises
+            ------
+            NodeHasChildrenError
+                If node to be removed has children
+        """
+
+        if depth == position == 0:
+            root = self.root
+            if root is None or root.left is not None or root.right is not None:
+                raise NodeHasChildrenError("Can't remove node with children")
+        
+        odd = True if position % 2 else False
+        parent_position = (position -1) // 2 if odd else position // 2
+        parent = self.get_node(depth - 1, parent_position)
+
+        if odd:
+            node = parent.right
+            if not node.is_leaf():
+                raise NodeHasChildrenError("Can't remove node with children")
+            parent.right = None                
+        else:
+            node = parent.left
+            if not node.is_leaf():
+                raise NodeHasChildrenError("Can't remove node with children")
+            parent.left = None
+                
     def get_node(self, depth, position):
-        if position < 0 or position > 2**depth - 1:
-            raise NodePositionError(depth, position)
+        """ Return node at given tree position.
+
+            Parameters
+            ----------
+            depth : int
+                depth of node
+            position : int
+                horizontal position of node
+
+            Raises
+            ------
+            NodePositionError
+                If the given position is not a valid binary tree node position.
+
+            MissingNodeError
+                If no node exists at the given position or a parent of that position.
+
+        """
 
         if position < 0 or position > 2**depth - 1 or depth < 0:
             raise NodePositionError(depth, position)
@@ -138,6 +200,9 @@ class Node:
         self.data = data
         self.left = None
         self.right = None
+
+    def is_leaf(self):
+        return self.left is None and self.right is None
 
     def add_left_child(self, node):
         if self.left is not None:

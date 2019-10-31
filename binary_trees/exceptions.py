@@ -22,3 +22,10 @@ class NodePositionOccupiedError(Exception):
 
     pass
 
+
+class NodeHasChildrenError(Exception):
+    """ Error indication a node has children and so cannot be removed.
+    """
+
+    pass
+
