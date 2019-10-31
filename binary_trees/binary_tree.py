@@ -17,7 +17,7 @@ class BinaryTree:
             Parameters
             ----------
             strict : bool
-                True to test for minimal possible height, False to test for height-balance. Defaults to False.
+                True to test for minimal possible height, False to test for maximum leaf depth difference of 1. Defaults to False.
 
             Returns
             -------
