@@ -35,44 +35,6 @@ class BinaryTree:
         self._height = height
         return height
 
-    def is_height_balanced(self):
-        """ Determine if tree is height-balanced.
-
-            Returns
-            -------
-            height_balanced: bool
-                True if for every node in the the tree, the difference in the height of the left and right subtrees is no greater than one.
-        """
-
-        return self.height_balance(self.root) > -1
-
-    def height_balance(self, root):
-        """ Return height of of tree if balanced, else -1.
-
-            Parameters
-            ----------
-            root : Node instance
-                The node from which to determine if the tree and its subtrees are balanced.
-
-            Returns
-            -------
-            height_balance: int
-                The height of the tree with the rooted at root, else -1.
-        """
-
-        if root is None:
-            return 0
-
-        left_height = self.height_balance(root.left)
-        right_height = self.height_balance(root.right)
-        if left_height == -1 or right_height == -1:
-            return -1
-
-        if abs(left_height - right_height) > 1:
-            return -1
-
-        return max(left_height, right_height) + 1
-
     def add_node(self, node, depth, position):
 
         if depth == 0:
@@ -111,16 +73,69 @@ class BinaryTree:
 
         return node
 
-    def value_at_node(self, depth, position):
+    def data_at_node(self, depth, position):
         node = self.get_node(depth, position)
-        return node.value
+        return node.data
 
-        
+    def is_height_balanced(self):
+        """ Determine if tree is height-balanced.
+
+            Returns
+            -------
+            height_balanced: bool
+                True if for every node in the the tree, the difference in the height of the left and right subtrees is no greater than one.
+        """
+
+        return self.height_balance(self.root) > -1
+
+    def height_balance(self, root):
+        """ Return height of of tree if balanced, else -1.
+
+            Parameters
+            ----------
+            root : Node instance
+                The node from which to determine if the tree and its subtrees are balanced.
+
+            Returns
+            -------
+            height_balance: int
+                The height of the tree with the rooted at root, else -1.
+        """
+
+        if root is None:
+            return 0
+
+        left_height = self.height_balance(root.left)
+        right_height = self.height_balance(root.right)
+        if left_height == -1 or right_height == -1:
+            return -1
+
+        if abs(left_height - right_height) > 1:
+            return -1
+
+        return max(left_height, right_height) + 1
+
+    def is_bst(self, root=False):
+        root = self.root if not root else root
+        if root is None:
+            return True
+
+        stack = [[-float('inf'), root, float('inf')]]
+        while stack:
+            min_val, root, max_val = stack.pop()
+            if not (min_val < root.data < max_val):
+                return False
+            if root.left is not None:
+                stack.append([min_val, root.left, root.data])
+            if root.right is not None:
+                stack.append([root.data, root.right, max_val])
+
+        return True
 
 class Node:
     
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, data):
+        self.data = data
         self.left = None
         self.right = None
 

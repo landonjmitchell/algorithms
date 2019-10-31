@@ -57,7 +57,7 @@ Tree C:
  /     /     \      
 0     3       7      
                \
-                8
+                10
 
 """
 tree_c = BinaryTree()
@@ -71,7 +71,7 @@ tree_c.add_node(Node(11), 2, 3)
 tree_c.add_node(Node(0), 3, 0)
 tree_c.add_node(Node(3), 3, 2)
 tree_c.add_node(Node(7), 3, 5)
-tree_c.add_node(Node(8), 4, 11)
+tree_c.add_node(Node(10), 4, 11)
 
 
 r"""
@@ -107,7 +107,7 @@ Tree E:
  /     / \  
 1     8   11  
      /  
-    7  
+    4  
 
 """
 
@@ -118,4 +118,4 @@ tree_e.add_node(Node(9), 1, 1)
 tree_e.add_node(Node(1), 2, 0)
 tree_e.add_node(Node(8), 2, 2)
 tree_e.add_node(Node(11), 2, 3)
-tree_e.add_node(Node(7), 3, 4)
+tree_e.add_node(Node(4), 3, 4)
